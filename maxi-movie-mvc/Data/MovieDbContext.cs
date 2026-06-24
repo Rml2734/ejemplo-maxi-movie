@@ -6,7 +6,7 @@ namespace maxi_movie_mvc.Data
 {
     public class MovieDbContext : IdentityDbContext<Usuario>
     {
-        public MovieDbContext(DbContextOptions<MovieDvContext> options) : base(options)
+        public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
         {
 
         }
