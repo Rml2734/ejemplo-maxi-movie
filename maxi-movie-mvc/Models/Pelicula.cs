@@ -19,6 +19,7 @@ namespace maxi_movie_mvc.Models
         public string Sinopsis { get; set; }
         [Url]
         [Required]
+        public string PosterUrlPortada { get; set; }
         public string PosterUrlImagen { get; set; }
         public int GeneroId { get; set; }
         public Genero? Genero { get; set; }
@@ -28,5 +29,6 @@ namespace maxi_movie_mvc.Models
         public int PromedioRating { get; set; }
         public List<Review>? ListaReviews { get; set; }
         public List<Favorito> UsuariosFavorito { get; set; }
+        
     }
 }

@@ -24,7 +24,7 @@ using (var scope = app.Services.CreateScope())
         //var userManager = services.GetRequiredService<UserManager<Usuario>>();
         //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         //await DbSeeder.Seed(context, userManager, roleManager);
-        DbSeeder.Seed(context);
+        //DbSeeder.Seed(context);
     }
     catch (Exception ex)
     {
