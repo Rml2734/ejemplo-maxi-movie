@@ -20,7 +20,6 @@ namespace maxi_movie_mvc.Models
         [Url]
         [Required]
         public string PosterUrlPortada { get; set; }
-        public string PosterUrlImagen { get; set; }
         public int GeneroId { get; set; }
         public Genero? Genero { get; set; }
         public int PlataformaId { get; set; }
@@ -28,7 +27,7 @@ namespace maxi_movie_mvc.Models
         [NotMapped]
         public int PromedioRating { get; set; }
         public List<Review>? ListaReviews { get; set; }
-        public List<Favorito> UsuariosFavorito { get; set; }
-        
+        public List<Favorito>? UsuariosFavorito { get; set; }
     }
 }
+

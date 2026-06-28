@@ -1,5 +1,7 @@
 using maxi_movie_mvc.Data;
 using maxi_movie_mvc.Models;
+using maxi_movie_mvc.Service;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,19 +14,64 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MovieDbContext")));
 
+//add identity
+builder.Services.AddIdentityCore<Usuario>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 3;
+    options.Password.RequireUppercase = false;
+}
+)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<MovieDbContext>()
+    .AddSignInManager();
+
+
+//Manejo de la cookie. Lo ponemos en default, pero hay que ponerlo.
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultScheme = IdentityConstants.ApplicationScheme;
+})
+.AddIdentityCookies();
+
+
+builder.Services.ConfigureApplicationCookie(o =>
+{
+    o.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    o.SlidingExpiration = true;
+    o.LoginPath = "/Usuario/Login";
+    o.AccessDeniedPath = "/Usuario/AccessDenied";
+});
+
+//Servicios de archivos
+builder.Services.AddScoped<ImagenStorage>();
+builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 1024 * 1024; });
+
 var app = builder.Build();
 
 //invocar la ejecucion del dbseeder con un using scope
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    //try
+    //{
+        //var context = services.GetRequiredService<MovieDbContext>();
+    //var userManager = services.GetRequiredService<UserManager<Usuario>>();
+    //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    //await DbSeeder.Seed(context, userManager, roleManager);
+    //DbSeeder.Seed(context);
+    //}
     try
     {
         var context = services.GetRequiredService<MovieDbContext>();
-        //var userManager = services.GetRequiredService<UserManager<Usuario>>();
-        //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        //await DbSeeder.Seed(context, userManager, roleManager);
-        //DbSeeder.Seed(context);
+
+        // 1. Descomentamos los servicios que el Seeder del futuro necesita
+        var userManager = services.GetRequiredService<UserManager<Usuario>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+        // 2. Invocamos al Seeder pasándole los 3 argumentos y forzamos a que espere con .Wait()
+        DbSeeder.Seed(context, userManager, roleManager).Wait();
     }
     catch (Exception ex)
     {
