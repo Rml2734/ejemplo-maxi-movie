@@ -48,30 +48,22 @@ builder.Services.ConfigureApplicationCookie(o =>
 builder.Services.AddScoped<ImagenStorage>();
 builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 1024 * 1024; });
 
+//Servicios de email
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+
 var app = builder.Build();
 
 //invocar la ejecucion del dbseeder con un using scope
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    //try
-    //{
-        //var context = services.GetRequiredService<MovieDbContext>();
-    //var userManager = services.GetRequiredService<UserManager<Usuario>>();
-    //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    //await DbSeeder.Seed(context, userManager, roleManager);
-    //DbSeeder.Seed(context);
-    //}
     try
     {
         var context = services.GetRequiredService<MovieDbContext>();
-
-        // 1. Descomentamos los servicios que el Seeder del futuro necesita
         var userManager = services.GetRequiredService<UserManager<Usuario>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-        // 2. Invocamos al Seeder pasándole los 3 argumentos y forzamos a que espere con .Wait()
-        DbSeeder.Seed(context, userManager, roleManager).Wait();
+        await DbSeeder.Seed(context, userManager, roleManager);
     }
     catch (Exception ex)
     {
