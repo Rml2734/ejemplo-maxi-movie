@@ -14,7 +14,7 @@ namespace maxi_movie_mvc.Controllers
         private readonly ImagenStorage _imagenStorage;
         private readonly IEmailService _emailService; // Cambia el tipo de object a IEmailService
 
-        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, ImagenStorage imagenStorage, IEmailService service)
+        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, ImagenStorage imagenStorage, IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
