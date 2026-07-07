@@ -4,6 +4,8 @@ using maxi_movie_mvc.Service;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
+using Google.GenAI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +53,19 @@ builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 
 //Servicios de email
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+
+//Servicio LLM
+//builder.Services.AddScoped<LlmService>();
+
+// 1. Declaramos la variable extrayendo el token que guardaste con setx
+string geminiApiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? "";
+
+// 2. Pasamos el modelo directamente en la configuración del cliente
+builder.Services.AddChatClient(new Google.GenAI.Client(apiKey: geminiApiKey)
+    .AsIChatClient("gemini-2.5-flash"));
+
+// Registramos tu servicio LlmService
+builder.Services.AddScoped<LlmService>();
 
 var app = builder.Build();
 
