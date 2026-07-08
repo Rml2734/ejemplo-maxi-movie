@@ -23,7 +23,7 @@ namespace maxi_movie_mvc.Controllers
             _llmService = llmService;
         }
 
-        public async Task<IActionResult> Index(int pagina = 1, string txtBusqueda = "", int generoId = 0)
+        public async Task<IActionResult> Index(int pagina = 1, string txtBusqueda = "", int generoId = 0, string vista = "grid")
         {
             if (pagina < 1) pagina = 1;
 
@@ -54,13 +54,15 @@ namespace maxi_movie_mvc.Controllers
             ViewBag.TxtBusqueda = txtBusqueda;
 
             var generos = await _context.Generos.OrderBy(g => g.Descripcion).ToListAsync();
-            generos.Insert(0, new Genero { Id = 0, Descripcion = "G�nero" });
+            generos.Insert(0, new Genero { Id = 0, Descripcion = "Género" });
             ViewBag.GeneroId = new SelectList(
                 generos,
                 "Id",
                 "Descripcion",
                 generoId
             );
+
+            ViewBag.Vista = vista;
 
             return View(peliculas);
         }
@@ -124,3 +126,4 @@ namespace maxi_movie_mvc.Controllers
         }
     }
 }
+
