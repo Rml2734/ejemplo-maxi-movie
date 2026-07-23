@@ -1,4 +1,4 @@
-using maxi_movie_mvc.Data;
+﻿using maxi_movie_mvc.Data;
 using maxi_movie_mvc.Models;
 using maxi_movie_mvc.Service;
 using Microsoft.AspNetCore.Http.Features;
@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// --- Configuraci�n Adaptativa de Base de Datos (Local + Railway) ---
+// --- Configuración Adaptativa de Base de Datos (Local + Railway) ---
 var connectionString = builder.Configuration.GetConnectionString("MovieDbContext");
 
 // Si estamos en Railway, detecta la variable de entorno DATABASE_URL de PostgreSQL
@@ -65,17 +65,29 @@ builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
-// Servicio LLM (Gemini)
-string geminiApiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? "";
+// --- Servicio LLM (Gemini) Seguro ---
+// Lee desde GOOGLE_API_KEY o GEMINI_API_KEY o appsettings/secrets.json
+string geminiApiKey = builder.Configuration["GOOGLE_API_KEY"]
+                   ?? builder.Configuration["GEMINI_API_KEY"]
+                   ?? Environment.GetEnvironmentVariable("GOOGLE_API_KEY")
+                   ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY")
+                   ?? "";
 
-builder.Services.AddChatClient(new Google.GenAI.Client(apiKey: geminiApiKey)
-    .AsIChatClient("gemini-2.5-flash"));
+if (!string.IsNullOrEmpty(geminiApiKey))
+{
+    builder.Services.AddChatClient(new Google.GenAI.Client(apiKey: geminiApiKey)
+        .AsIChatClient("gemini-2.5-flash"));
+}
+else
+{
+    Console.WriteLine("⚠️ WARNING: No se encontró GOOGLE_API_KEY o GEMINI_API_KEY. Las funciones de IA estarán deshabilitadas.");
+}
 
 builder.Services.AddScoped<LlmService>();
 
 var app = builder.Build();
 
-// Invocar la ejecuci�n de migraciones autom�ticas y DbSeeder
+// Invocar la ejecución de migraciones automáticas y DbSeeder
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -86,7 +98,7 @@ using (var scope = app.Services.CreateScope())
         // 1. Aplica migraciones pendientes en PostgreSQL (crea las tablas si no existen)
         await context.Database.MigrateAsync();
 
-        // 2. Ejecuta el sembrado de datos (roles, usuario admin, g�neros, etc.)
+        // 2. Ejecuta el sembrado de datos (roles, usuario admin, géneros, etc.)
         var userManager = services.GetRequiredService<UserManager<Usuario>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await DbSeeder.Seed(context, userManager, roleManager);
