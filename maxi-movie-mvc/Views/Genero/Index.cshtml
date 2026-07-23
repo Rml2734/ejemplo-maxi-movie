@@ -5,44 +5,57 @@
 }
 
 <div class="container py-4">
+    @* Cabecera de la Sección con Icono *@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="fs-3 fw-bold text-light mb-1">Administración de Géneros</h1>
-            <p class="text-muted small mb-0">Gestiona las categorías disponibles para clasificar las películas.</p>
+            <h1 class="fs-3 fw-bold text-white mb-1 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary fs-2">category</span>
+                <span>Administración de Géneros</span>
+            </h1>
+            <p class="text-white-50 small mb-0">Gestiona las categorías disponibles para clasificar las películas.</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+        <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-3 py-2 rounded-3 fw-semibold">
             <span class="material-symbols-outlined fs-5">add_circle</span>
             <span>Nuevo Género</span>
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm bg-dark text-light overflow-hidden">
+    @* Tabla Contenedora Estilizada *@
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden" style="background-color: #212529;">
         <div class="table-responsive">
             <table class="table table-dark table-hover align-middle mb-0">
-                <thead class="table-light text-dark">
+                @* Cabecera integrada en el tema oscuro *@
+                <thead style="background-color: #2b3035;">
                     <tr>
-                        <th class="py-3 px-4" style="width: 70%;">
+                        <th class="py-3 px-4 border-0 text-white-50 fw-semibold" style="width: 75%;">
                             @Html.DisplayNameFor(model => model.Descripcion)
                         </th>
-                        <th class="py-3 px-4 text-end" style="width: 30%;">Acciones</th>
+                        <th class="py-3 px-4 border-0 text-white-50 fw-semibold text-end" style="width: 25%;">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-0">
                     @foreach (var item in Model)
                     {
-                        <tr>
-                            <td class="py-3 px-4 fw-medium">
+                        <tr style="border-color: rgba(255, 255, 255, 0.05);">
+                            <td class="py-3 px-4 fw-medium text-white">
                                 @Html.DisplayFor(modelItem => item.Descripcion)
                             </td>
                             <td class="py-3 px-4 text-end">
-                                <div class="btn-group gap-2" role="group">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center justify-content-center p-2" title="Editar">
+                                @* Grupo de botones conectado de manera limpia *@
+                                <div class="btn-group shadow-sm rounded-2 overflow-hidden" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-warning d-inline-flex align-items-center justify-content-center p-2 border-0"
+                                       style="background-color: rgba(255,193,7,0.05);" title="Editar">
                                         <span class="material-symbols-outlined fs-5">edit</span>
                                     </a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info d-inline-flex align-items-center justify-content-center p-2" title="Detalles">
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-info d-inline-flex align-items-center justify-content-center p-2 border-0"
+                                       style="background-color: rgba(13,202,240,0.05);" title="Detalles">
                                         <span class="material-symbols-outlined fs-5">info</span>
                                     </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-2" title="Eliminar">
+                                    <a asp-action="Delete" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-2 border-0"
+                                       style="background-color: rgba(220,53,69,0.05);" title="Eliminar">
                                         <span class="material-symbols-outlined fs-5">delete</span>
                                     </a>
                                 </div>

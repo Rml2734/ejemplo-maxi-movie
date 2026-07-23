@@ -44,6 +44,7 @@ namespace maxi_movie_mvc.Controllers
             if (pagina > totalPaginas && totalPaginas > 0) pagina = totalPaginas;
 
             var peliculas = await consulta
+                .OrderBy(p => p.Id)
                 .Skip((pagina - 1) * PageSize)
                 .Take(PageSize)
                 .ToListAsync();
@@ -124,6 +125,9 @@ namespace maxi_movie_mvc.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+      
+
     }
 }
 

@@ -7,36 +7,47 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Google.GenAI;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//Incluir dvcontext
-builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MovieDbContext")));
+// --- Configuración Adaptativa de Base de Datos (Local + Railway) ---
+var connectionString = builder.Configuration.GetConnectionString("MovieDbContext");
 
-//add identity
+// Si estamos en Railway, detecta la variable de entorno DATABASE_URL de PostgreSQL
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    // Transforma la URL tipo 'postgres://user:pass@host:port/db' al formato de Npgsql
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+    connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true;";
+}
+
+builder.Services.AddDbContext<MovieDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Add Identity
 builder.Services.AddIdentityCore<Usuario>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 3;
     options.Password.RequireUppercase = false;
-}
-)
+})
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MovieDbContext>()
     .AddSignInManager();
 
-
-//Manejo de la cookie. Lo ponemos en default, pero hay que ponerlo.
+// Manejo de la cookie
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultScheme = IdentityConstants.ApplicationScheme;
 })
 .AddIdentityCookies();
-
 
 builder.Services.ConfigureApplicationCookie(o =>
 {
@@ -46,45 +57,44 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.AccessDeniedPath = "/Usuario/AccessDenied";
 });
 
-//Servicios de archivos
+// Servicios de archivos
 builder.Services.AddScoped<ImagenStorage>();
 builder.Services.Configure<FormOptions>(o => { o.MultipartBodyLengthLimit = 2 * 1024 * 1024; });
 
-//Servicios de email
+// Servicios de email
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
-//Servicio LLM
-//builder.Services.AddScoped<LlmService>();
-
-// 1. Declaramos la variable extrayendo el token que guardaste con setx
+// Servicio LLM (Gemini)
 string geminiApiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? "";
 
-// 2. Pasamos el modelo directamente en la configuración del cliente
 builder.Services.AddChatClient(new Google.GenAI.Client(apiKey: geminiApiKey)
     .AsIChatClient("gemini-2.5-flash"));
 
-// Registramos tu servicio LlmService
 builder.Services.AddScoped<LlmService>();
 
 var app = builder.Build();
 
-//invocar la ejecucion del dbseeder con un using scope
+// Invocar la ejecución de migraciones automáticas y DbSeeder
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<MovieDbContext>();
+
+        // 1. Aplica migraciones pendientes en PostgreSQL (crea las tablas si no existen)
+        await context.Database.MigrateAsync();
+
+        // 2. Ejecuta el sembrado de datos (roles, usuario admin, géneros, etc.)
         var userManager = services.GetRequiredService<UserManager<Usuario>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await DbSeeder.Seed(context, userManager, roleManager);
     }
     catch (Exception ex)
     {
-        // Log errors or handle them as needed
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred seeding the DB.");
+        logger.LogError(ex, "An error occurred migration/seeding the DB.");
     }
 }
 
@@ -92,7 +102,6 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -107,6 +116,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

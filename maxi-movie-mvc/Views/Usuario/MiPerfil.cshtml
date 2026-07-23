@@ -1,17 +1,12 @@
 ﻿@model MiPerfilViewModel
 
 @{
+    ViewData["Title"] = "Mi Perfil";
     string mensaje = ViewData["Mensaje"] as string ?? "";
 }
 
 <style>
-
-
-    .profile-card {
-        background-color: #495057;
-        border-radius: 0.75rem;
-    }
-
+    /* Estilos específicos y refinados para el contenedor de la foto de perfil */
     .profile-img-container {
         position: relative;
         width: 128px;
@@ -24,7 +19,7 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
-        border: 4px solid rgba(17, 147, 212, 0.5);
+        border: 4px solid rgba(17, 147, 212, 0.4);
     }
 
     .edit-btn {
@@ -40,84 +35,74 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: transform 0.2s ease-in-out;
     }
 
         .edit-btn:hover {
             transform: scale(1.1);
-            transition: transform 0.2s;
-        }
-
-    .form-control {
-        background-color: rgba(33, 49, 60, 0.5);
-        border: 1px solid #495057;
-        color: white;
-    }
-
-        .form-control:focus {
-            background-color: rgba(33, 49, 60, 0.7);
-            border-color: #1193d4;
-            color: white;
-            box-shadow: 0 0 0 0.25rem rgba(17, 147, 212, 0.25);
-        }
-
-    .form-label {
-        color: #adb5bd;
-    }
-
-    .btn-primary {
-        background-color: #1193d4;
-        border-color: #1193d4;
-    }
-
-        .btn-primary:hover {
             background-color: #0f84bf;
-            border-color: #0f84bf;
         }
-
-    #ImagenPerfil {
-        display: none;
-    }
 </style>
 
 <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="profile-card p-4 p-md-5">
-                    <form method="post" enctype="multipart/form-data">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+
+                @* Mensaje de éxito al guardar cambios *@
+                @if (!string.IsNullOrEmpty(mensaje))
+                {
+                    <div class="alert alert-success alert-dismissible fade show border-0 mb-4 shadow-sm" role="alert">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined fs-5">check_circle</span>
+                            <span>@mensaje</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @* Tarjeta de Perfil *@
+                <div class="card bg-dark text-light p-4 p-md-5 border border-secondary border-opacity-25 shadow-lg rounded-3">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+
+                        @* Sección Superior: Avatar y Encabezado *@
                         <div class="text-center mb-4">
                             <div class="profile-img-container mb-3">
-                                <img alt="Foto de perfil" id="profileImage" class="profile-img" src="@Model.ImagenUrlPerfil" />
-                                <button type="button" class="edit-btn" onclick="document.getElementById('ImagenPerfil').click()">
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
+                                <img alt="Foto de perfil" id="profileImage" class="profile-img shadow" src="@Model.ImagenUrlPerfil" />
+                                <button type="button" class="edit-btn shadow" onclick="document.getElementById('inputImagenPerfil').click()">
+                                    <span class="material-symbols-outlined fs-6">edit</span>
                                 </button>
-                                <input type="file" asp-for="ImagenPerfil" accept="image/png,image/jpeg,image/webp" class="form-control" onchange="previewImage(this)" />
+                                @* Forzamos el ID exacto para que el JavaScript y el botón funcionen al 100% *@
+                                <input type="file" asp-for="ImagenPerfil" id="inputImagenPerfil" accept="image/png,image/jpeg,image/webp" class="d-none" onchange="previewImage(this)" />
                             </div>
-                            <h2 class="fs-2 fw-bold mb-1">@Model.Nombre @Model.Apellido</h2>
-                            <p class="text-secondary">@Model.Email</p>
+                            <h2 class="fs-3 fw-bold mb-1 text-white">@Model.Nombre @Model.Apellido</h2>
+                            <p class="text-white-50 small mb-0 font-monospace">@Model.Email</p>
                         </div>
+
+                        @* Formulario de Datos *@
                         <div class="mb-3">
-                            <label class="form-label" for="name">Nombre</label>
-                            <input asp-for="Nombre" class="form-control p-3" placeholder="Sophia" />
+                            <label class="form-label text-light small fw-bold" asp-for="Nombre">Nombre</label>
+                            <input asp-for="Nombre" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu nombre" />
+                            <span asp-validation-for="Nombre" class="text-danger small mt-1 d-block"></span>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label" for="apellido">Apellido</label>
-                            <input asp-for="Apellido" class="form-control p-3" placeholder="Clark" />
+                            <label class="form-label text-light small fw-bold" asp-for="Apellido">Apellido</label>
+                            <input asp-for="Apellido" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu apellido" />
+                            <span asp-validation-for="Apellido" class="text-danger small mt-1 d-block"></span>
                         </div>
+
                         <div class="mb-4">
-                            <label class="form-label" for="email">Correo electrónico</label>
-                            <input asp-for="Email" class="form-control p-3" disabled placeholder="sophia.clark@email.com" />
+                            <label class="form-label text-light small fw-bold" asp-for="Email">Correo electrónico</label>
+                            <input asp-for="Email" class="form-control form-control-lg text-white-50 bg-secondary bg-opacity-10 border-secondary" disabled placeholder="tu.correo@email.com" />
                         </div>
-                        <button class="btn btn-primary w-100 p-3 fw-semibold" type="submit">Guardar cambios</button>
+
+                        <button class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" type="submit">
+                            Guardar cambios
+                        </button>
                     </form>
-                    @if (!string.IsNullOrEmpty(mensaje))
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            @mensaje
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
                 </div>
+
             </div>
         </div>
     </div>
@@ -127,7 +112,7 @@
     function previewImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 document.getElementById('profileImage').src = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);

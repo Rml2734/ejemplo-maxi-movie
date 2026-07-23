@@ -1,29 +1,42 @@
 ﻿@model ModalLlmViewModel
-@{
-}
 
 <div class="modal fade" id="llmModal" tabindex="-1" aria-labelledby="llmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="llmModalLabel">
-                    <span id="modalTipoTexto">@Model?.Tipo</span> - <span id="modalPeliculaTexto">@Model?.Pelicula</span>
+        @* Estilo oscuro unificado para el contenedor del modal *@
+        <div class="modal-content border-0 shadow-lg text-white" style="background-color: #1f2327;">
+
+            @* Cabecera del modal *@
+            <div class="modal-header border-secondary border-opacity-25 py-3">
+                <h1 class="modal-title fs-5 d-flex align-items-center gap-2" id="llmModalLabel">
+                    <span class="material-symbols-outlined text-primary align-middle">auto_awesome</span>
+                    <span id="modalTipoTexto" class="fw-bold text-primary">@Model?.Tipo</span>
+                    <span class="text-white-50 fs-6">|</span>
+                    <span id="modalPeliculaTexto" class="text-white fs-6 fw-medium">@Model?.Pelicula</span>
                 </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="llmModalContent">
-                    <p>@Model?.SpoilerResumen</p>
+
+            @* Cuerpo del modal *@
+            <div class="modal-body py-4">
+                @* Contenedor de la respuesta final de la IA *@
+                <div id="llmModalContent" class="lh-base text-white-50" style="text-align: justify; font-size: 0.95rem;">
+                    <p class="mb-0">@Model?.SpoilerResumen</p>
                 </div>
-                <div id="llmModalLoading" class="text-center" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
+
+                @* Estado de carga (Spinner personalizado) *@
+                <div id="llmModalLoading" class="text-center py-3" style="display: none;">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;">
                         <span class="visually-hidden">Cargando...</span>
                     </div>
-                    <p class="mt-2">Consultando con la IA...</p>
+                    <p class="text-white-50 small mb-0 font-monospace tracking-wide">Consultando con la IA...</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+            @* Pie del modal *@
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary px-4 py-2 rounded-3 fw-semibold shadow-sm" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
             </div>
         </div>
     </div>

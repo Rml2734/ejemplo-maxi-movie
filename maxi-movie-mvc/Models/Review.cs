@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace maxi_movie_mvc.Models
 {
@@ -9,17 +10,20 @@ namespace maxi_movie_mvc.Models
         public Pelicula? Pelicula { get; set; }
         public string UsuarioId { get; set; }
         public Usuario? Usuario { get; set; }
+
         [Range(1, 5)]
         public int Rating { get; set; }
+
         [Required]
         [StringLength(500)]
         public string Comentario { get; set; }
+
         [Required]
         [DataType(DataType.Date)]
-        public DateTime FechaReview { get; set; }
-        //row version for concurrency control
-        [Timestamp]
-        public byte[] RowVersion { get; set; }
+        public DateTime FechaReview { get; set; } = DateTime.UtcNow; // Forzar UTC por defecto
+
+        // Versión de fila usando uint para el control de concurrencia nativo de PostgreSQL (xmin)
+        //public uint RowVersion { get; set; }
     }
 
     public class ReviewCreateViewModel

@@ -1,31 +1,51 @@
 ﻿@model maxi_movie_mvc.Models.Genero
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nuevo Género";
 }
 
-<h1>Create</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
 
-<h4>Genero</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            @* Tarjeta del Formulario *@
+            <div class="card border-0 shadow bg-dark text-light">
+                <div class="card-body p-4">
+
+                    @* Encabezado interno *@
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-primary fs-3">add_circle</span>
+                        <h2 class="fs-4 fw-bold mb-0">Crear Nuevo Género</h2>
+                    </div>
+
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        @* Campo de Descripción *@
+                        <div class="mb-4">
+                            <label asp-for="Descripcion" class="form-label text-muted small fw-medium mb-2">Nombre del Género</label>
+                            <input asp-for="Descripcion" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" placeholder="Ej: Acción, Terror, Suspenso..." autofocus />
+                            <span asp-validation-for="Descripcion" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        @* Botones de Acción *@
+                        <div class="d-flex align-items-center justify-content-between pt-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined fs-5">arrow_back</span>
+                                <span>Regresar</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2 px-4">
+                                <span class="material-symbols-outlined fs-5">save</span>
+                                <span>Guardar</span>
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

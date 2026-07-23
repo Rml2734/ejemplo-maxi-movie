@@ -1,66 +1,139 @@
 ﻿@model maxi_movie_mvc.Models.Pelicula
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nueva Película";
 }
 
-<h1>Create</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
 
-<h4>Pelicula</h4>
-<hr />
-<div class="row">
+            @* Tarjeta del Formulario *@
+            <div class="card border-0 shadow bg-dark text-light">
+                <div class="card-body p-4">
 
-    <div class="col-6">
-    <form asp-action="Create" class="row g-3">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="col-12">
-                <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
-                <span asp-validation-for="Titulo" class="text-danger"></span>
-            </div>
-            <div class="col-12">
-                <label asp-for="Sinopsis" class="control-label"></label>
-                <input asp-for="Sinopsis" class="form-control" />
-                <span asp-validation-for="Sinopsis" class="text-danger"></span>
-            </div>
-            <div class="col-6">
-                <label asp-for="FechaLanzamiento" class="control-label"></label>
-                <input asp-for="FechaLanzamiento" class="form-control" />
-                <span asp-validation-for="FechaLanzamiento" class="text-danger"></span>
-            </div>
-            <div class="col-6">
-                <label asp-for="MinutosDuracion" class="control-label"></label>
-                <input asp-for="MinutosDuracion" class="form-control" />
-                <span asp-validation-for="MinutosDuracion" class="text-danger"></span>
-            </div>
-            <div class="col-12">
-                <label asp-for="PosterUrlPortada" class="control-label"></label>
-                <input asp-for="PosterUrlPortada" class="form-control" />
-                <span asp-validation-for="PosterUrlPortada" class="text-danger"></span>
-            </div>
-            <div class="col-6">
-                Género
-                <select asp-for="GeneroId" class="form-select" asp-items="ViewBag.GeneroId"></select>
-            </div>
-            <div class="col-6">
-                Plataforma
-                <select asp-for="PlataformaId" class="form-select" asp-items="ViewBag.PlataformaId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Aceptar" class="btn btn-primary" />
-            </div>
-        </form>
+                    @* Encabezado con acento principal (Primary) *@
+                    <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-secondary border-opacity-20">
+                        <span class="material-symbols-outlined text-primary fs-3">add_circle</span>
+                        <div>
+                            <h2 class="fs-4 fw-bold mb-0">Agregar Nueva Película</h2>
+                            <p class="text-muted small mb-0">Ingresa los datos del catálogo, clasificación y su plataforma de streaming.</p>
+                        </div>
+                    </div>
 
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        @* Layout en 3 columnas: Formulario (5/12) + Sinopsis/Poster (4/12) + Previsualización (3/12) *@
+                        <div class="row g-4">
+
+                            @* Columna Izquierda: Datos Básicos y Selectores *@
+                            <div class="col-md-5">
+                                <div class="mb-3">
+                                    <label asp-for="Titulo" class="form-label text-muted small fw-medium mb-1">Título de la Película</label>
+                                    <input asp-for="Titulo" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" placeholder="Ej: Batman Inicia" autofocus />
+                                    <span asp-validation-for="Titulo" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <div class="row g-2 mb-3">
+                                    <div class="col-sm-6">
+                                        <label asp-for="FechaLanzamiento" class="form-label text-muted small fw-medium mb-1">Lanzamiento</label>
+                                        <input asp-for="FechaLanzamiento" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" type="date" />
+                                        <span asp-validation-for="FechaLanzamiento" class="text-danger small mt-1 d-block"></span>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label asp-for="MinutosDuracion" class="form-label text-muted small fw-medium mb-1">Duración (Minutos)</label>
+                                        <input asp-for="MinutosDuracion" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" placeholder="Ej: 120" />
+                                        <span asp-validation-for="MinutosDuracion" class="text-danger small mt-1 d-block"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="GeneroId" class="form-label text-muted small fw-medium mb-1">Género</label>
+                                    <select asp-for="GeneroId" class="form-select bg-secondary bg-opacity-10 border-secondary text-light py-2" asp-items="ViewBag.GeneroId" style="color-scheme: dark;"></select>
+                                    <span asp-validation-for="GeneroId" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label asp-for="PlataformaId" class="form-label text-muted small fw-medium mb-1">Plataforma</label>
+                                    <select asp-for="PlataformaId" class="form-select bg-secondary bg-opacity-10 border-secondary text-light py-2" asp-items="ViewBag.PlataformaId" style="color-scheme: dark;"></select>
+                                    <span asp-validation-for="PlataformaId" class="text-danger small mt-1 d-block"></span>
+                                </div>
+                            </div>
+
+                            @* Columna Central: Sinopsis y Enlace del Póster *@
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Sinopsis" class="form-label text-muted small fw-medium mb-1">Sinopsis / Resumen</label>
+                                    <textarea asp-for="Sinopsis" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" rows="5" placeholder="Escribe una breve descripción de la trama..."></textarea>
+                                    <span asp-validation-for="Sinopsis" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label asp-for="PosterUrlPortada" class="form-label text-muted small fw-medium mb-1">URL del Póster</label>
+                                    <input asp-for="PosterUrlPortada" id="inputPosterUrl" class="form-control bg-secondary bg-opacity-10 border-secondary text-light py-2" placeholder="Pega el enlace de la imagen aquí..." />
+                                    <span asp-validation-for="PosterUrlPortada" class="text-danger small mt-1 d-block"></span>
+                                </div>
+                            </div>
+
+                            @* Columna Derecha: Vista previa interactiva del Póster *@
+                            <div class="col-md-3 text-center d-flex flex-column align-items-center justify-content-center border-start border-secondary border-opacity-10">
+                                <span class="text-muted small fw-medium mb-2 d-block">Vista Previa Póster</span>
+                                <div class="bg-secondary bg-opacity-10 p-2 rounded shadow-sm d-inline-block" style="border: 1px dashed rgba(255,255,255,0.15);">
+                                    <img id="previewPoster" src="" alt="Póster" class="img-fluid rounded" style="max-height: 200px; min-height: 150px; width: 140px; object-fit: cover; display: none;" />
+                                    <div id="noPosterText" class="text-muted small d-flex flex-column align-items-center justify-content-center p-4" style="width: 140px; height: 200px;">
+                                        <span class="material-symbols-outlined fs-2 mb-2">image</span>
+                                        <span>Esperando URL...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        @* Botones de Acción al pie *@
+                        <div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top border-secondary border-opacity-20">
+                            <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined fs-5">arrow_back</span>
+                                <span>Regresar a la Lista</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2 px-4 fw-medium">
+                                <span class="material-symbols-outlined fs-5">save</span>
+                                <span>Aceptar</span>
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
-
-<div>
-    <a asp-action="Index">Regresar a la lista</a>
-</div>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            function actualizarPoster() {
+                var url = $('#inputPosterUrl').val().trim();
+                if (url) {
+                    $('#previewPoster').attr('src', url).show();
+                    $('#noPosterText').addClass('d-none').removeClass('d-flex');
+                } else {
+                    $('#previewPoster').hide().attr('src', '');
+                    $('#noPosterText').removeClass('d-none').addClass('d-flex');
+                }
+            }
+
+            $('#inputPosterUrl').on('input blur', actualizarPoster);
+
+            // Manejo de error por si la URL rota o invalida
+            $('#previewPoster').on('error', function () {
+                $(this).hide().attr('src', '');
+                $('#noPosterText').removeClass('d-none').addClass('d-flex');
+            });
+        });
+    </script>
 }

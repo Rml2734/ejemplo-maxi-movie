@@ -6,34 +6,43 @@
     var totalPeliculas = ViewBag.TotalPeliculas ?? 0;
     var busqueda = ViewBag.TxtBusqueda ?? "";
     var generoId = ViewBag.GeneroId ?? 0;
-    // Nueva variable para controlar el estado de la grilla/lista
     var vista = ViewBag.Vista ?? "grid";
 }
 
 <main class="flex-grow-1">
     <div class="container py-4">
-        @* panel de filtros *@
+
+        @* 1. PANEL DE FILTROS ESTILIZADO *@
         <form method="get">
             <div class="row g-3 mb-4 align-items-center">
+                @* Buscador con Icono Integrado *@
                 <div class="col-lg-6">
-                    <div class="input-group">
-                        <button type="submit" class="input-group-text">Buscar</button>
-                        <input name="txtBusqueda" value="@busqueda" class="form-control form-control-lg" placeholder="Buscar películas..." type="text" />
+                    <div class="input-group border-0 shadow-sm rounded-3 overflow-hidden" style="background-color: #2b3035;">
+                        <span class="input-group-text border-0 text-white-50 bg-transparent ps-3">
+                            <span class="material-symbols-outlined align-middle">search</span>
+                        </span>
+                        <input name="txtBusqueda" value="@busqueda" class="form-control border-0 text-white py-2"
+                               placeholder="Buscar películas..." type="text" style="background-color: transparent;" />
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Buscar</button>
                     </div>
                 </div>
+
+                @* Selector de Género y Controladores de Vista *@
                 <div class="col-lg-6 d-flex flex-wrap gap-2 justify-content-lg-end">
-                    <div class="dropdown">
-                        <select name="generoId" asp-items="@ViewBag.GeneroId" class="form-select form-select-lg btn-outline-secondary"
+                    <div class="position-relative">
+                        <select name="generoId" asp-items="@ViewBag.GeneroId"
+                                class="form-select border-0 text-white rounded-3 px-3 py-2 pe-5"
+                                style="background-color: #2b3035; min-width: 160px;"
                                 onchange="this.form.submit()"></select>
                     </div>
 
-                    @* Botones de vista convertidos en enlaces dinámicos *@
-                    <div class="btn-group" role="group">
+                    <div class="btn-group shadow-sm rounded-3 overflow-hidden" role="group">
                         <a asp-action="Index"
                            asp-route-txtBusqueda="@busqueda"
                            asp-route-generoId="@generoId"
                            asp-route-vista="grid"
-                           class="btn @(vista == "grid" ? "btn-primary" : "btn-outline-secondary")">
+                           class="btn border-0 py-2 px-3 @(vista == "grid" ? "btn-primary text-white" : "text-white-50")"
+                           style="background-color: @(vista == "grid" ? "" : "#2b3035");">
                             <span class="material-symbols-outlined align-middle">grid_view</span>
                         </a>
 
@@ -41,32 +50,32 @@
                            asp-route-txtBusqueda="@busqueda"
                            asp-route-generoId="@generoId"
                            asp-route-vista="list"
-                           class="btn @(vista == "list" ? "btn-primary" : "btn-outline-secondary")">
+                           class="btn border-0 py-2 px-3 @(vista == "list" ? "btn-primary text-white" : "text-white-50")"
+                           style="background-color: @(vista == "list" ? "" : "#2b3035");">
                             <span class="material-symbols-outlined align-middle">view_list</span>
                         </a>
                     </div>
                 </div>
             </div>
-            @* Mantenemos oculto el estado de la vista para que al buscar o filtrar no se pierda *@
             <input type="hidden" name="vista" value="@vista" />
         </form>
 
-        @* listado condicional según la vista seleccionada *@
+        @* 2. LISTADO DE PELÍCULAS SEGÚN SELECCIÓN *@
         @if (vista == "list")
         {
             <div class="row g-3">
                 @foreach (var pelicula in Model)
                 {
                     <div class="col-12">
-                        <a asp-action="Details" asp-route-id="@pelicula.Id" class="text-decoration-none">
-                            <div class="card shadow-sm border-0 h-100">
+                        <a asp-action="Details" asp-route-id="@pelicula.Id" class="text-decoration-none card-hover d-block">
+                            <div class="card border-0 shadow-sm text-white rounded-3 overflow-hidden" style="background-color: #212529;">
                                 <div class="d-flex align-items-center">
-                                    <img alt="@pelicula.Titulo" src="@pelicula.PosterUrlPortada" style="width: 90px; height: 130px; object-fit: cover; border-top-left-radius: var(--bs-card-inner-border-radius); border-bottom-left-radius: var(--bs-card-inner-border-radius);" />
+                                    <img alt="@pelicula.Titulo" src="@pelicula.PosterUrlPortada" style="width: 90px; height: 130px; object-fit: cover;" />
                                     <div class="card-body p-3">
-                                        <h5 class="card-title fs-5 fw-semibold mb-1 text-dark">@pelicula.Titulo</h5>
-                                        <div class="d-flex align-items-center text-muted small">
-                                            <span class="material-symbols-outlined text-warning me-1" style="font-size: 1rem;"> star </span>
-                                            <span>4.5</span>
+                                        <h5 class="card-title fs-5 fw-bold text-white mb-2">@pelicula.Titulo</h5>
+                                        <div class="d-flex align-items-center small bg-dark bg-opacity-20 rounded-pill px-2 py-1 d-inline-flex">
+                                            <span class="material-symbols-outlined text-warning me-1" style="font-size: 1.1rem;">star</span>
+                                            <span class="text-white-50 fw-semibold">4.5</span>
                                         </div>
                                     </div>
                                 </div>
@@ -82,16 +91,16 @@
                 @foreach (var pelicula in Model)
                 {
                     <div class="col">
-                        <a asp-action="Details" asp-route-id="@pelicula.Id">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="position-relative">
-                                    <img alt="@pelicula.Titulo" class="card-img-top" src="@pelicula.PosterUrlPortada" />
+                        <a asp-action="Details" asp-route-id="@pelicula.Id" class="text-decoration-none card-hover d-block h-100">
+                            <div class="card h-100 border-0 shadow-sm text-white rounded-3 overflow-hidden" style="background-color: #212529;">
+                                <div class="position-relative overflow-hidden aspect-ratio-poster">
+                                    <img alt="@pelicula.Titulo" class="card-img-top img-fluid transition-transform" src="@pelicula.PosterUrlPortada" style="object-fit: cover; aspect-ratio: 2/3;" />
                                 </div>
-                                <div class="card-body p-2">
-                                    <h5 class="card-title fs-6 fw-semibold mb-1">@pelicula.Titulo</h5>
-                                    <div class="d-flex align-items-center text-muted small">
-                                        <span class="material-symbols-outlined text-warning me-1" style="font-size: 1rem;"> star </span>
-                                        <span>4.5</span>
+                                <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                    <h5 class="card-title fs-6 fw-bold text-white mb-2 text-truncate">@pelicula.Titulo</h5>
+                                    <div class="d-flex align-items-center small">
+                                        <span class="material-symbols-outlined text-warning me-1" style="font-size: 1.1rem;">star</span>
+                                        <span class="text-white-50 fw-semibold">4.5</span>
                                     </div>
                                 </div>
                             </div>
@@ -101,25 +110,32 @@
             </div>
         }
 
+        @* 3. PAGINACIÓN CON ESTILO OSCURO INTEGRADO *@
         @if (totalPaginas > 1)
         {
-            <div class="row mt-4">
+            <div class="row mt-5">
                 <div class="col-12">
                     <nav aria-label="Navegación de páginas">
-                        <ul class="pagination justify-content-center">
+                        <ul class="pagination justify-content-center gap-1">
                             <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
-                                <a asp-action="Index" class="page-link" asp-route-pagina="@(paginaActual - 1)" asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista">Anterior</a>
+                                <a asp-action="Index" class="page-link rounded-3 border-0 px-3 py-2"
+                                   asp-route-pagina="@(paginaActual - 1)" asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista"
+                                   style="background-color: #2b3035; color: rgba(255,255,255,0.7);">Anterior</a>
                             </li>
 
                             @for (int i = 1; i <= totalPaginas; i++)
                             {
                                 <li class="page-item @(i == paginaActual ? "active" : "")">
-                                    <a asp-action="Index" asp-route-pagina="@i" class="page-link" asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista">@i</a>
+                                    <a asp-action="Index" asp-route-pagina="@i" class="page-link rounded-3 border-0 px-3 py-2 fw-semibold"
+                                       asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista"
+                                       style="background-color: @(i == paginaActual ? "#0d6efd" : "#2b3035"); color: white;">@i</a>
                                 </li>
                             }
 
                             <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
-                                <a asp-action="Index" class="page-link" asp-route-pagina="@(paginaActual + 1)" asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista">Siguiente</a>
+                                <a asp-action="Index" class="page-link rounded-3 border-0 px-3 py-2"
+                                   asp-route-pagina="@(paginaActual + 1)" asp-route-txtBusqueda="@busqueda" asp-route-generoId="@generoId" asp-route-vista="@vista"
+                                   style="background-color: #2b3035; color: rgba(255,255,255,0.7);">Siguiente</a>
                             </li>
                         </ul>
                     </nav>
@@ -128,3 +144,27 @@
         }
     </div>
 </main>
+
+@* 4. ESTILOS EMBEDDED PARA ANIMACIONES PREMIUM *@
+<style>
+    .card-hover {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+        }
+
+            .card-hover:hover .transition-transform {
+                transform: scale(1.04);
+            }
+
+    .transition-transform {
+        transition: transform 0.3s ease;
+    }
+
+    .page-item.disabled .page-link {
+        background-color: #1f2327 !important;
+        color: rgba(255, 255, 255, 0.25) !important;
+    }
+</style>

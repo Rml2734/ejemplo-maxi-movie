@@ -1,8 +1,7 @@
 ﻿@model List<Review>
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
+    ViewData["Title"] = "Mis Reseñas";
 }
 
 <style>
@@ -11,44 +10,84 @@
     }
 
     .star-empty {
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.15); @* Cambiado a un gris traslúcido para que no compita en el fondo oscuro *@
+    }
+
+    .review-card {
+        border-radius: 12px !important;
+        background-color: #212529 !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     }
 </style>
 
-<h2 class="h3 fw-bold mb-4">Mis Reseñas</h2>
+@* Cabecera con el botón de escape general *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-white mb-1">Mis Reseñas</h2>
+        <p class="text-white-50 small mb-0">Administra las opiniones que has compartido.</p>
+    </div>
 
+    @* Solución UX 1: Botón para volver a la cartelera *@
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light d-flex align-items-center gap-2 px-3 py-2 rounded-3 fw-semibold border-secondary border-opacity-50">
+        <span class="material-symbols-outlined fs-5">movie</span>
+        <span>Volver a la Cartelera</span>
+    </a>
+</div>
 
-<div class="mt-5">
+<div class="mt-4">
     <div class="list-group">
-
         @foreach (var item in Model)
         {
-            <div class="list-group-item bg-dark text-light border-secondary review-card p-4 mb-3">
-                <div class="d-flex align-items-center mb-3">
-                    <img alt="@item.Pelicula.Titulo" class="rounded-circle me-3" height="40" src="@item.Pelicula.PosterUrlPortada" width="40" />
-                    <div>
-                        <h5 class="mb-0 text-light">@item.Pelicula.Titulo</h5>
-                        <small class="">Fecha Reseña: @item.FechaReview.ToShortDateString()</small>
+            <div class="list-group-item text-light review-card p-4 mb-3">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center">
+                        <img alt="@item.Pelicula.Titulo" class="rounded-circle me-3 border border-secondary border-opacity-25" height="44" src="@item.Pelicula.PosterUrlPortada" width="44" style="object-fit: cover;" />
+                        <div>
+                            <h5 class="mb-0 text-white fw-bold">@item.Pelicula.Titulo</h5>
+                            <small class="text-white-50">Fecha Reseña: @item.FechaReview.ToShortDateString()</small>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-2">
+                @* Bloque de Estrellas *@
+                <div class="mb-3">
                     @for (int i = 1; i <= 5; i++)
                     {
                         if (i <= item.Rating)
                         {
-                            <span class="material-symbols-outlined star-filled">star</span>
+                            <span class="material-symbols-outlined star-filled align-middle">star</span>
                         }
                         else
                         {
-                            <span class="material-symbols-outlined star-empty">grade</span>
+                            <span class="material-symbols-outlined star-empty align-middle">grade</span>
                         }
                     }
                 </div>
-                <p class="mb-3">@item.Comentario</p>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">Editar</a>
+
+                @* Comentario *@
+                <p class="mb-4 text-white-50 lh-base" style="max-width: 800px; text-align: justify;">@item.Comentario</p>
+
+                @* Botones de Acción *@
+                <div class="d-flex align-items-center gap-2 pt-3 border-top border-secondary border-opacity-10">
+                    @* Tu botón original de Editar mejorado *@
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary px-3 py-2 rounded-2 fw-semibold d-inline-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined fs-6">edit</span>
+                        <span>Editar</span>
+                    </a>
+
+                    @* Solución UX 2: Botón para regresar directamente a la película *@
+                    <a asp-controller="Home" asp-action="Details" asp-route-id="@item.PeliculaId" class="btn btn-sm btn-outline-primary px-3 py-2 rounded-2 fw-semibold d-inline-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined fs-6">visibility</span>
+                        <span>Ver Película</span>
+                    </a>
+                </div>
             </div>
         }
-
     </div>
 </div>

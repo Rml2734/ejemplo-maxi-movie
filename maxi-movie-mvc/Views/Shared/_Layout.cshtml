@@ -11,16 +11,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - maxi_movie_mvc</title>
+    <title>@ViewData["Title"] - MaxiMovie</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/maxi_movie_mvc.styles.css" asp-append-version="true" />
-    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
-<body>
+@* Cambiado a flexbox d-flex flex-column y min-vh-100 para empujar el footer siempre al fondo *@
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -73,15 +73,15 @@
                     </ul>
                 </div>
 
-                <ul class="navbar-nav flex-grow">
+                <ul class="navbar-nav gap-2 align-items-center">
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li class="nav-item">
                             <a class="btn btn-primary" asp-area="" asp-controller="Usuario" asp-action="MiPerfil">Perfil</a>
                         </li>
                         <li class="nav-item">
-                            <form asp-area="" asp-controller="Usuario" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link nav-link text-white">Cerrar sesión</button>
+                            <form asp-area="" asp-controller="Usuario" asp-action="Logout" method="post" class="d-inline m-0">
+                                <button type="submit" class="btn btn-outline-danger">Cerrar sesión</button>
                             </form>
                         </li>
                     }
@@ -104,15 +104,45 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    @* Footer Renovado: bg-dark, bordes tenues y comportamiento inteligente al fondo (mt-auto) *@
+    <footer class="bg-dark text-secondary py-4 mt-auto border-top border-secondary border-opacity-10">
         <div class="container">
-            &copy; 2025 - maxi_movie_mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row align-items-center justify-content-between g-3">
+
+                @* Info de Copyright con Año Automático por C# *@
+                <div class="col-md-6 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
+                        <span class="material-symbols-outlined text-primary fs-5">movie</span>
+                        <span class="text-light fw-bold small text-uppercase tracking-wider">MaxiMovie</span>
+                    </div>
+                    <p class="small mb-0 text-muted">&copy; @DateTime.Now.Year - Todos los derechos reservados.</p>
+                </div>
+
+                @* Enlaces Rápidos Dinámicos basados en Roles *@
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 small">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="text-secondary text-decoration-none text-hover-light transition-all">Inicio</a>
+
+                        @if (SignInManager.IsSignedIn(User) && UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin").Result)
+                        {
+                            <span class="text-muted opacity-25">|</span>
+                            <a asp-area="" asp-controller="Pelicula" asp-action="Index" class="text-secondary text-decoration-none text-hover-light transition-all">Películas</a>
+                            <span class="text-muted opacity-25">|</span>
+                            <a asp-area="" asp-controller="Plataforma" asp-action="Index" class="text-secondary text-decoration-none text-hover-light transition-all">Plataformas</a>
+                        }
+
+                        <span class="text-muted opacity-25">|</span>
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-secondary text-decoration-none text-hover-light transition-all">Privacidad</a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

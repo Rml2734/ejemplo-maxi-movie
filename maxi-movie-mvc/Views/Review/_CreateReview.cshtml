@@ -1,75 +1,92 @@
 ﻿@model ReviewCreateViewModel
-@{
-}
 
 <div class="modal fade" id="createReviewModal" tabindex="-1" aria-labelledby="createReviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="createReviewModalLabel">Crear Reseña - @Model.PeliculaTitulo</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-controller="Review" asp-action="Create" method="post">
-                <div class="modal-body">
+    <div class="modal-dialog modal-dialog-centered">
+        @* modal-dialog-centered hace que se vea mucho mejor en pantallas grandes *@
+        <div class="modal-content border-0 shadow-lg text-white rounded-3" style="background-color: #212529;">
 
+            @* Cabecera del Modal *@
+            <div class="modal-header border-secondary border-opacity-25 p-4 bg-transparent">
+                <h1 class="modal-title fs-5 fw-bold mb-0 d-flex align-items-center gap-2 text-white" id="createReviewModalLabel">
+                    <span class="material-symbols-outlined text-warning fs-3">rate_review</span>
+                    <span>Crear Reseña</span>
+                </h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-controller="Review" asp-action="Create" method="post">
+                @* Cuerpo del Modal *@
+                <div class="modal-body p-4">
+                    <p class="text-white-50 small mb-4 mt-0">Película: <span class="text-primary fw-semibold">@Model.PeliculaTitulo</span></p>
 
                     <input type="hidden" asp-for="PeliculaId" />
 
-                    <div class="mb-3">
-                        <label class="form-label">Calificación</label>
-                        <div class="rating-stars">
+                    @* Sección de Calificación *@
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-white-50 small text-uppercase tracking-wider mb-2">Tu Calificación</label>
+
+                        <div class="rating-stars bg-dark p-3 rounded-3 d-flex flex-row-reverse justify-content-center gap-2 shadow-sm" style="border: 1px solid rgba(255,255,255,0.05);">
                             <input type="radio" asp-for="Rating" value="5" id="star5" />
                             <label for="star5" class="star">★</label>
+
                             <input type="radio" asp-for="Rating" value="4" id="star4" />
                             <label for="star4" class="star">★</label>
+
                             <input type="radio" asp-for="Rating" value="3" id="star3" />
                             <label for="star3" class="star">★</label>
+
                             <input type="radio" asp-for="Rating" value="2" id="star2" />
                             <label for="star2" class="star">★</label>
+
                             <input type="radio" asp-for="Rating" value="1" id="star1" />
                             <label for="star1" class="star">★</label>
                         </div>
-                        <span asp-validation-for="Rating" class="text-danger"></span>
+                        <span asp-validation-for="Rating" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    @* Sección de Comentario *@
                     <div class="mb-3">
-                        <label asp-for="Comentario" class="form-label">Comentario</label>
-                        <textarea asp-for="Comentario" class="form-control" rows="4" placeholder="Comparte tu opinión sobre esta película..."></textarea>
-                        <span asp-validation-for="Comentario" class="text-danger"></span>
+                        <label asp-for="Comentario" class="form-label fw-semibold text-white-50 small text-uppercase tracking-wider mb-2">Tu Opinión</label>
+                        <textarea asp-for="Comentario"
+                                  class="form-control text-white border-0 rounded-3 p-3 shadow-sm"
+                                  rows="4"
+                                  style="background-color: #1a1d20; border: 1px solid rgba(255,255,255,0.05)!important; resize: none;"
+                                  placeholder="Comparte tu opinión sobre esta película..."></textarea>
+                        <span asp-validation-for="Comentario" class="text-danger small mt-1 d-block"></span>
                     </div>
-
-
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+
+                @* Pie del Modal / Acciones *@
+                <div class="modal-footer border-top border-secondary border-opacity-10 p-4">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-semibold border-secondary border-opacity-50" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold shadow-sm d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined fs-5">save</span>
+                        <span>Guardar</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+@* Estilos CSS optimizados para el Modal Oscuro *@
 <style>
-    .rating-stars {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
+    .rating-stars input[type="radio"] {
+        display: none;
     }
 
-        .rating-stars input[type="radio"] {
-            display: none;
-        }
+    .rating-stars .star {
+        font-size: 2rem;
+        color: #4a4f55;
+        cursor: pointer;
+        transition: color 0.15s ease-in-out;
+    }
 
-        .rating-stars label {
-            font-size: 2rem;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
+        .rating-stars input[type="radio"]:checked ~ .star,
+        .rating-stars .star:hover,
+        .rating-stars .star:hover ~ .star {
+            color: #ffc107 !important;
         }
-
-            .rating-stars input[type="radio"]:checked ~ label,
-            .rating-stars label:hover,
-            .rating-stars label:hover ~ label {
-                color: #ffc107;
-            }
 </style>

@@ -1,47 +1,88 @@
 ﻿@model IEnumerable<maxi_movie_mvc.Models.Plataforma>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Administrar Plataformas";
 }
 
-<h1>Index</h1>
+<div class="container py-4">
+    @* Encabezado de la página *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fs-3 fw-bold text-light mb-1">Administración de Plataformas</h1>
+            <p class="text-muted small mb-0">Gestiona los servicios de streaming y sus enlaces oficiales.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined fs-5">add_circle</span>
+            <span>Nueva Plataforma</span>
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Url)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LogoUrl)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Url)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LogoUrl)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @* Contenedor de la Tabla *@
+    <div class="card border-0 shadow-sm bg-dark text-light overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead class="table-light text-dark">
+                    <tr>
+                        <th class="py-3 px-4" style="width: 25%;">@Html.DisplayNameFor(model => model.Nombre)</th>
+                        <th class="py-3 px-4" style="width: 15%; text-align: center;">Logo</th>
+                        <th class="py-3 px-4" style="width: 35%;">Sitio Web</th>
+                        <th class="py-3 px-4 text-end" style="width: 25%;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @* Nombre *@
+                            <td class="py-3 px-4 fw-medium text-white">
+                                @Html.DisplayFor(modelItem => item.Nombre)
+                            </td>
+
+                            @* Miniatura del Logo *@
+                            <td class="py-3 px-4 text-center">
+                                @if (!string.IsNullOrEmpty(item.LogoUrl))
+                                {
+                                    <img src="@item.LogoUrl" alt="Logo @item.Nombre" class="img-fluid rounded bg-light p-1" style="max-height: 40px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Sin Logo</span>
+                                }
+                            </td>
+
+                            @* Enlace al Sitio Web *@
+                            <td class="py-3 px-4">
+                                @if (!string.IsNullOrEmpty(item.Url))
+                                {
+                                    <a href="@item.Url" target="_blank" class="btn btn-sm btn-link text-info text-decoration-none d-inline-flex align-items-center gap-1 p-0">
+                                        <span class="material-symbols-outlined fs-6">open_in_new</span>
+                                        <span class="text-truncate" style="max-width: 200px;">Visitar Sitio</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">No asignado</span>
+                                }
+                            </td>
+
+                            @* Botones de Acciones *@
+                            <td class="py-3 px-4 text-end">
+                                <div class="btn-group gap-2" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center justify-content-center p-2" title="Editar">
+                                        <span class="material-symbols-outlined fs-5">edit</span>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info d-inline-flex align-items-center justify-content-center p-2" title="Detalles">
+                                        <span class="material-symbols-outlined fs-5">info</span>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center p-2" title="Eliminar">
+                                        <span class="material-symbols-outlined fs-5">delete</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,36 +1,85 @@
 ﻿@model maxi_movie_mvc.Models.Plataforma
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de la Plataforma";
 }
 
-<h1>Details</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
 
-<div>
-    <h4>Plataforma</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Url)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Url)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LogoUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LogoUrl)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            @* Tarjeta Principal *@
+            <div class="card border-0 shadow bg-dark text-light">
+                <div class="card-body p-4">
+
+                    @* Encabezado con acento Info (Azul) *@
+                    <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-secondary border-opacity-20">
+                        <span class="material-symbols-outlined text-info fs-3">info</span>
+                        <div>
+                            <h2 class="fs-4 fw-bold mb-0">Detalles de la Plataforma</h2>
+                            <p class="text-muted small mb-0">Información técnica almacenada en el sistema.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 align-items-center">
+                        @* Columna Izquierda: Visualización del Logo *@
+                        <div class="col-sm-4 text-center">
+                            <div class="bg-light p-3 rounded shadow-sm d-inline-block">
+                                @if (!string.IsNullOrEmpty(Model?.LogoUrl))
+                                {
+                                    <img src="@Model.LogoUrl" alt="Logo @Model.Nombre" class="img-fluid" style="max-height: 90px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    <span class="text-dark small fw-bold">Sin Logo</span>
+                                }
+                            </div>
+                        </div>
+
+                        @* Columna Derecha: Datos en limpio *@
+                        <div class="col-sm-8">
+                            <div class="mb-3">
+                                <span class="text-muted small d-block fw-medium">Nombre oficial</span>
+                                <span class="fs-5 fw-bold text-white">@Html.DisplayFor(model => model.Nombre)</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="text-muted small d-block fw-medium">Sitio Web Oficial</span>
+                                @if (!string.IsNullOrEmpty(Model?.Url))
+                                {
+                                    <a href="@Model.Url" target="_blank" class="text-info text-decoration-none d-inline-flex align-items-center gap-1 small fw-medium">
+                                        <span>@Model.Url</span>
+                                        <span class="material-symbols-outlined fs-6">open_in_new</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">No asignado</span>
+                                }
+                            </div>
+
+                            <div class="mb-0">
+                                <span class="text-muted small d-block fw-medium">Enlace directo del Logo</span>
+                                <span class="text-white-50 small text-break font-monospace">@Html.DisplayFor(model => model.LogoUrl)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Botones de Acción al pie *@
+                    <div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top border-secondary border-opacity-20">
+                        <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined fs-5">arrow_back</span>
+                            <span>Regresar</span>
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-info d-inline-flex align-items-center gap-2 px-4 text-dark fw-medium">
+                            <span class="material-symbols-outlined fs-5">edit</span>
+                            <span>Editar</span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

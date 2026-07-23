@@ -1,6 +1,62 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 card bg-dark text-light p-5 border border-secondary border-opacity-25 shadow-sm">
+
+            <div class="d-flex align-items-center gap-3 mb-4 border-bottom border-secondary pb-3">
+                <span class="material-symbols-outlined text-primary fs-1">shield</span>
+                <div>
+                    <h1 class="mb-0 fw-bold text-uppercase tracking-wide fs-3">@ViewData["Title"]</h1>
+                    <small class="text-muted">Última actualización: @DateTime.Now.ToString("dd/MM/yyyy")</small>
+                </div>
+            </div>
+
+            <p class="lead text-white-50">
+                En <strong>MaxiMovie</strong>, nos tomamos muy en serio la seguridad y el manejo de los datos de nuestros usuarios. Esta página detalla cómo gestionamos la información dentro de la plataforma.
+            </p>
+
+            <h3 class="h5 text-primary mt-4 mb-3">1. Información que Recopilamos</h3>
+            <p class="text-white-50">
+                Para el correcto funcionamiento del sistema de reseñas y personalización de perfiles, la aplicación recopila los siguientes datos básicos de registro de manera segura:
+            </p>
+            <ul class="text-white-50 ps-4">
+                <li class="mb-2">Nombre de usuario y credenciales de acceso protegidas mediante hashing.</li>
+                <li class="mb-2">Dirección de correo electrónico asociada a la cuenta del usuario.</li>
+                <li class="mb-2">Historial de reseñas, calificaciones de películas y comentarios publicados dentro de la plataforma.</li>
+            </ul>
+
+            <h3 class="h5 text-primary mt-4 mb-3">2. Uso de la Información</h3>
+            <p class="text-white-50">
+                Los datos recolectados se utilizan exclusivamente para los siguientes propósitos internos:
+            </p>
+            <ul class="text-white-50 ps-4">
+                <li class="mb-2">Permitir el inicio de sesión y la autenticación basada en roles (Usuarios y Administradores).</li>
+                <li class="mb-2">Vincular las opiniones y críticas de cine de forma correcta al perfil del autor.</li>
+                <li class="mb-2">Garantizar la moderación y administración segura de las películas, plataformas y géneros disponibles en el catálogo.</li>
+            </ul>
+
+            <h3 class="h5 text-primary mt-4 mb-3">3. Entorno de Demostración (Portafolio)</h3>
+            <div class="alert alert-info bg-opacity-10 text-info border border-info border-opacity-25 my-3 d-flex gap-3 align-items-start">
+                <span class="material-symbols-outlined mt-1">info</span>
+                <p class="mb-0 small">
+                    <strong>Nota para evaluadores:</strong> Esta aplicación fue desarrollada con fines estrictamente académicos y demostrativos para formar parte de un portafolio profesional. Los datos de prueba ingresados aquí no se comparten con terceras partes ni se comercializan de ninguna forma.
+                </p>
+            </div>
+
+            <h3 class="h5 text-primary mt-4 mb-3">4. Almacenamiento y Seguridad</h3>
+            <p class="text-white-50 mb-0">
+                Toda la información se procesa y almacena en bases de datos relacionales configuradas de manera segura y desplegadas en la nube, utilizando los estándares nativos de protección provistos por <strong>Microsoft ASP.NET Core Identity</strong>.
+            </p>
+
+            <div class="mt-5 pt-3 border-top border-secondary text-center">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-sm px-4">
+                    Regresar al Inicio
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

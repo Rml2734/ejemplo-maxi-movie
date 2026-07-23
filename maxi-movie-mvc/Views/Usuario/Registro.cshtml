@@ -1,46 +1,55 @@
 ﻿@model RegistroViewModel
 @{
+    ViewData["Title"] = "Crear Cuenta";
 }
 
 <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5 px-3">
     <div class="w-100" style="max-width: 450px;">
-        <div class="card p-4 p-sm-5 shadow-lg border-0">
-            <div class="card-body">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body p-4 p-sm-5">
                 <h2 class="card-title text-center h3 fw-bold mb-4">Crear una cuenta</h2>
-                <form method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <form method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
                     <div class="mb-3">
-                        <label class="form-label" asp-for="Nombre"></label>
-                        <input asp-for="Nombre" class="form-control" placeholder="Ingresa tu nombre" />
-                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                        <label class="form-label text-light small fw-bold" asp-for="Nombre">Nombre</label>
+                        <input asp-for="Nombre" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu nombre" />
+                        <span asp-validation-for="Nombre" class="text-danger small mt-1 d-block"></span>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label" asp-for="Apellido"></label>
-                        <input asp-for="Apellido" class="form-control" placeholder="Ingresa tu apellido" />
-                        <span asp-validation-for="Apellido" class="text-danger"></span>
+                        <label class="form-label text-light small fw-bold" asp-for="Apellido">Apellido</label>
+                        <input asp-for="Apellido" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu apellido" />
+                        <span asp-validation-for="Apellido" class="text-danger small mt-1 d-block"></span>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label" asp-for="Email"></label>
-                        <input asp-for="Email" class="form-control" placeholder="Ingresa tu email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <label class="form-label text-light small fw-bold" asp-for="Email">Email</label>
+                        <input asp-for="Email" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu email" />
+                        <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label" asp-for="Clave"></label>
-                        <input autocomplete="new-password" asp-for="Clave" class="form-control" placeholder="Ingresa tu clave" />
-                        <span asp-validation-for="Clave" class="text-danger"></span>
+                        <label class="form-label text-light small fw-bold" asp-for="Clave">Clave</label>
+                        <input autocomplete="new-password" type="password" asp-for="Clave" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Ingresa tu clave" />
+                        <span asp-validation-for="Clave" class="text-danger small mt-1 d-block"></span>
                     </div>
+
                     <div class="mb-4">
-                        <label class="form-label" asp-for="ConfirmarClave"></label>
-                        <input autocomplete="new-password" asp-for="ConfirmarClave" class="form-control" placeholder="Repite tu clave" />
-                        <span asp-validation-for="ConfirmarClave" class="text-danger"></span>
+                        <label class="form-label text-light small fw-bold" asp-for="ConfirmarClave">Confirmar Clave</label>
+                        <input autocomplete="new-password" type="password" asp-for="ConfirmarClave" class="form-control form-control-lg text-white bg-dark border-secondary" placeholder="Repite tu clave" />
+                        <span asp-validation-for="ConfirmarClave" class="text-danger small mt-1 d-block"></span>
                     </div>
+
                     <div class="d-grid">
                         <button class="btn btn-primary btn-lg fw-bold" type="submit">Registrarse</button>
                     </div>
                 </form>
-                <p class="mt-4 text-center text-muted">
+
+                <p class="mt-4 text-center text-white-50 small mb-0">
                     ¿Ya tienes una cuenta?
-                    <a asp-action="Login" class="fw-medium text-primary text-decoration-none">
+                    <a asp-action="Login" class="fw-medium text-info text-decoration-none">
                         Inicia sesión
                     </a>
                 </p>

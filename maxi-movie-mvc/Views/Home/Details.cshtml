@@ -9,136 +9,176 @@
     int anio = Model.FechaLanzamiento.Year;
 }
 
-<main class="container my-4">
+<main class="container my-4 text-white">
     <div class="row g-4 g-lg-5">
-        <div class="col-lg-4">
-            <img alt="@Model.Titulo" class="img-fluid rounded-3 shadow-lg" src="@Model.PosterUrlPortada" />
+        @* Póster de la película lateral *@
+        <div class="col-lg-4 text-center text-lg-start">
+            <img alt="@Model.Titulo" class="img-fluid rounded-3 shadow-lg sticky-lg-top" src="@Model.PosterUrlPortada" style="top: 24px; max-height: 550px; object-fit: cover;" />
         </div>
+
+        @* Detalle e Información de Contenido *@
         <div class="col-lg-8">
-            <h1 class="display-5 fw-bold">@Model.Titulo</h1>
-            <p class="text-muted">@Model.Genero.Descripcion | @horas h @minutos m | @anio</p>
-            <p class="lead">@Model.Sinopsis</p>
-            <div class="card bg-light border p-4 my-4">
+            <h1 class="display-5 fw-bold mb-2">@Model.Titulo</h1>
+
+            @* Badges de Metadatos Estilizados *@
+            <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-2 fw-semibold">
+                    @Model.Genero.Descripcion
+                </span>
+                <span class="badge bg-secondary bg-opacity-20 text-white-50 px-3 py-2 rounded-2 border border-secondary border-opacity-10">
+                    <span class="material-symbols-outlined align-middle fs-6 me-1">schedule</span>@horas h @minutos m
+                </span>
+                <span class="badge bg-secondary bg-opacity-20 text-white-50 px-3 py-2 rounded-2 border border-secondary border-opacity-10">
+                    @anio
+                </span>
+            </div>
+
+            <p class="lead text-white-50 lh-base mb-4" style="text-align: justify;">@Model.Sinopsis</p>
+
+            @* PANEL DE CALIFICACIÓN COMPLETO (TEMA OSCURO PREMIUM) *@
+            <div class="card border-0 p-4 my-4 rounded-3 shadow-sm" style="background-color: #212529;">
                 <div class="row align-items-center">
-                    <div class="col-sm-4 text-center text-sm-start">
-                        <p class="display-2 fw-bolder text-dark mb-0">4.5</p>
-                        <div class="text-primary">
-                            <span class="material-symbols-outlined">star</span>
-                            <span class="material-symbols-outlined">star</span>
-                            <span class="material-symbols-outlined">star</span>
-                            <span class="material-symbols-outlined">star</span>
+                    <div class="col-sm-4 text-center text-sm-start border-end-sm border-secondary border-opacity-25 pe-sm-4">
+                        <p class="display-2 fw-bolder text-white mb-0 lh-1">4.5</p>
+                        <div class="my-2 d-flex justify-content-center justify-content-sm-start text-warning gap-1">
+                            <span class="material-symbols-outlined fill-icon">star</span>
+                            <span class="material-symbols-outlined fill-icon">star</span>
+                            <span class="material-symbols-outlined fill-icon">star</span>
+                            <span class="material-symbols-outlined fill-icon">star</span>
                             <span class="material-symbols-outlined">star_half</span>
                         </div>
-                        <p class="text-muted mb-0">125 reviews</p>
+                        <p class="text-white-50 small mb-0 fw-medium">125 reviews totales</p>
                     </div>
-                    <div class="col-sm-8 mt-3 mt-sm-0">
-                        <div class="row align-items-center gx-2 gy-1">
-                            <div class="col-1 text-end text-dark fw-medium">5</div>
+
+                    <div class="col-sm-8 mt-4 mt-sm-0 ps-sm-4">
+                        <div class="row align-items-center gx-2 gy-2">
+                            @* Fila de 5 estrellas *@
+                            <div class="col-1 text-end text-white-50 small fw-bold">5</div>
                             <div class="col-9">
-                                <div class="progress" style="height: 8px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="40" class="progress-bar" role="progressbar" style="width: 40%"></div>
+                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
-                            <div class="col-2 text-muted text-end">40%</div>
-                            <div class="col-1 text-end text-dark fw-medium">4</div>
+                            <div class="col-2 text-white-50 text-end small fw-semibold">40%</div>
+
+                            @* Fila de 4 estrellas *@
+                            <div class="col-1 text-end text-white-50 small fw-bold">4</div>
                             <div class="col-9">
-                                <div class="progress" style="height: 8px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="30" class="progress-bar" role="progressbar" style="width: 30%"></div>
+                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
-                            <div class="col-2 text-muted text-end">30%</div>
-                            <div class="col-1 text-end text-dark fw-medium">3</div>
+                            <div class="col-2 text-white-50 text-end small fw-semibold">30%</div>
+
+                            @* Fila de 3 estrellas *@
+                            <div class="col-1 text-end text-white-50 small fw-bold">3</div>
                             <div class="col-9">
-                                <div class="progress" style="height: 8px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="15" class="progress-bar" role="progressbar" style="width: 15%"></div>
+                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
-                            <div class="col-2 text-muted text-end">15%</div>
-                            <div class="col-1 text-end text-dark fw-medium">2</div>
+                            <div class="col-2 text-white-50 text-end small fw-semibold">15%</div>
+
+                            @* Fila de 2 estrellas *@
+                            <div class="col-1 text-end text-white-50 small fw-bold">2</div>
                             <div class="col-9">
-                                <div class="progress" style="height: 8px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="10" class="progress-bar" role="progressbar" style="width: 10%"></div>
+                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
-                            <div class="col-2 text-muted text-end">10%</div>
-                            <div class="col-1 text-end text-dark fw-medium">1</div>
+                            <div class="col-2 text-white-50 text-end small fw-semibold">10%</div>
+
+                            @* Fila de 1 estrella *@
+                            <div class="col-1 text-end text-white-50 small fw-bold">1</div>
                             <div class="col-9">
-                                <div class="progress" style="height: 8px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="5" class="progress-bar" role="progressbar" style="width: 5%"></div>
+                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
-                            <div class="col-2 text-muted text-end">5%</div>
+                            <div class="col-2 text-white-50 text-end small fw-semibold">5%</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            @* Botones de acción *@
-            <div class="d-grid gap-3 d-sm-flex my-4">
-                <button onclick="cargarLlm('Resumen', '@Model.Titulo')" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2">
-                    <span class="material-symbols-outlined">auto_awesome</span>
-                    <span>Resumen IA</span>
-                </button>
-                <button onclick="cargarLlm('Spoiler', '@Model.Titulo')" class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center gap-2">
-                    <span class="material-symbols-outlined">movie</span>
-                    <span>Tirame un spoiler</span>
-                </button>
-
-                <button @(ViewBag.UserReview ? "disabled" : "") class="btn btn-secondary btn-lg d-flex align-items-center justify-content-center gap-2"
-                        type="button" data-bs-toggle="modal" data-bs-target="#createReviewModal">
-                    <span class="material-symbols-outlined">add_notes</span>
-                    <span>Crear Reseña</span>
-                </button>
+            @* Botones de Acción Modificados para Mayor Simetría *@
+            <div class="row g-2 my-4">
+                <div class="col-sm-4">
+                    <button onclick="cargarLlm('Resumen', '@Model.Titulo')" class="btn btn-primary w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span>Resumen IA</span>
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <button onclick="cargarLlm('Spoiler', '@Model.Titulo')" class="btn btn-outline-light w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3">
+                        <span class="material-symbols-outlined">movie</span>
+                        <span>Ver Spoiler</span>
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <button @(ViewBag.UserReview ? "disabled" : "") class="btn btn-secondary w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3"
+                            type="button" data-bs-toggle="modal" data-bs-target="#createReviewModal">
+                        <span class="material-symbols-outlined">add_notes</span>
+                        <span>Crear Reseña</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Mostrar mensajes de éxito o error -->
             @if (TempData["ReviewExiste"] != null)
             {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ReviewExiste"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 text-white bg-danger bg-opacity-20 d-flex align-items-center justify-content-between p-3" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-danger">error</span>
+                        <span>@TempData["ReviewExiste"]</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                 </div>
             }
 
-            @* reviews *@
+            @* REVIEWS DE USUARIOS *@
             <div class="mt-5">
-                <h2 class="h3 fw-bold mb-4">Reviews</h2>
-                <div class="list-group">
+                <h2 class="h4 fw-bold mb-4 text-white d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">forum</span> Reseñas de la comunidad
+                </h2>
+                <div class="d-flex flex-column gap-3">
                     @foreach (var item in Model.ListaReviews)
                     {
-                        <div class="list-group-item bg-dark text-light border-secondary review-card p-4 mb-3">
-                            <div class="d-flex align-items-center mb-3">
-                                <img alt="@item.Usuario.Nombre" class="rounded-circle me-3" height="40"
-                                     src="@(string.IsNullOrEmpty(item.Usuario.ImagenUrlPerfil) ? "/images/default-avatar.png" : item.Usuario.ImagenUrlPerfil)"
-                                     onerror="this.src='/images/default-avatar.png'" width="40" />
-                                <div>
-                                    <h5 class="mb-0 text-light">@string.Concat(item.Usuario.Nombre, " ", item.Usuario.Apellido)</h5>
-                                    <small class="">@item.FechaReview.ToShortDateString()</small>
+                        <div class="card border-0 review-card p-4 rounded-3" style="background-color: #1f2327;">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img alt="@item.Usuario.Nombre" class="rounded-circle me-3 border border-secondary border-opacity-25" height="42"
+                                         src="@(string.IsNullOrEmpty(item.Usuario.ImagenUrlPerfil) ? "/images/default-avatar.png" : item.Usuario.ImagenUrlPerfil)"
+                                         onerror="this.src='/images/default-avatar.png'" width="42" style="object-fit: cover;" />
+                                    <div>
+                                        <h6 class="mb-0 text-white fw-bold">@string.Concat(item.Usuario.Nombre, " ", item.Usuario.Apellido)</h6>
+                                        <small class="text-white-50 font-monospace" style="font-size: 0.8rem;">@item.FechaReview.ToShortDateString()</small>
+                                    </div>
+                                </div>
+                                <div class="text-warning d-flex gap-0.5">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= item.Rating)
+                                        {
+                                            <span class="material-symbols-outlined fs-5 fill-icon">star</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="material-symbols-outlined fs-5 text-muted">grade</span>
+                                        }
+                                    }
                                 </div>
                             </div>
-                            <div class="mb-2">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    if (i <= item.Rating)
-                                    {
-                                        <span class="material-symbols-outlined star-filled">star</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="material-symbols-outlined star-empty">grade</span>
-                                    }
-                                }
-                            </div>
-                            <p class="mb-3">@item.Comentario</p>
+                            <p class="mb-0 text-white-50 lh-base pe-lg-4" style="font-size: 0.95rem;">@item.Comentario</p>
 
                             @if (SignInManager.IsSignedIn(User))
                             {
                                 @if (UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin").Result)
                                 {
-                                    <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-2">
-                                        <span class="material-symbols-outlined">edit</span> Editar
-                                    </a>
-
+                                    <div class="mt-3 text-end">
+                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2 px-3">
+                                            <span class="material-symbols-outlined align-middle fs-6 me-1">edit</span>Editar Reseña
+                                        </a>
+                                    </div>
                                 }
                             }
                         </div>
@@ -149,76 +189,69 @@
     </div>
 </main>
 
+@* Inicialización de ViewModels para Partials *@
 @{
-        var reviewViewModel = new ReviewCreateViewModel
-        {
-            PeliculaId = Model.Id,
-            PeliculaTitulo = Model.Titulo
-        };
-    }
+    var reviewViewModel = new ReviewCreateViewModel
+    {
+        PeliculaId = Model.Id,
+        PeliculaTitulo = Model.Titulo
+    };
 
-    <partial name="~/Views/Review/_CreateReview.cshtml" model="reviewViewModel" />
-
- COMENTADO TEMPORALMENTE
-    @{
-        var llmViewModel = new ModalLlmViewModel
-        {
-            Tipo = "",
-            Pelicula = Model.Titulo,
-            SpoilerResumen = ""
-        };
-    }
-    <partial name="~/Views/Home/_ModalLlm.cshtml" model="llmViewModel" />
-
+    var llmViewModel = new ModalLlmViewModel
+    {
+        Tipo = "",
+        Pelicula = Model.Titulo,
+        SpoilerResumen = ""
+    };
+}
+<partial name="~/Views/Review/_CreateReview.cshtml" model="reviewViewModel" />
+<partial name="~/Views/Home/_ModalLlm.cshtml" model="llmViewModel" />
 
 <style>
-    .star-filled {
-        color: #ffc107;
+    .fill-icon {
+        font-variant-numeric: normal;
+        font-image: none;
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .star-empty {
-        color: #6c757d;
+    @@media (min-width: 576px) {
+        .border-end-sm {
+            border-end: 1px solid rgba(255,255,255,0.1) !important;
+        }
     }
 </style>
 
 @section Scripts {
     <script>
         function cargarLlm(tipo, titulo) {
-            // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('llmModal'));
-
-            // Actualizar el título del modal
             document.getElementById('modalTipoTexto').textContent = tipo;
             document.getElementById('modalPeliculaTexto').textContent = titulo;
 
-            // Mostrar spinner y ocultar contenido
             document.getElementById('llmModalLoading').style.display = 'block';
             document.getElementById('llmModalContent').style.display = 'none';
 
             modal.show();
 
-            // Determinar la URL según el tipo
             const url = tipo === 'Spoiler'
                 ? '@Url.Action("Spoiler", "Home")?titulo=' + encodeURIComponent(titulo)
                 : '@Url.Action("Resumen", "Home")?titulo=' + encodeURIComponent(titulo);
 
-            // Hacer la llamada AJAX
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        document.getElementById('llmModalContent').innerHTML = '<p>' + data.data + '</p>';
+                        document.getElementById('llmModalContent').innerHTML = '<p class="text-white-50 lh-base">' + data.data + '</p>';
                     } else {
                         document.getElementById('llmModalContent').innerHTML =
-                            '<div class="alert alert-danger">Error: ' + data.message + '</div>';
+                            '<div class="alert alert-danger bg-danger bg-opacity-20 border-0 text-white">' + data.message + '</div>';
                     }
                 })
                 .catch(error => {
                     document.getElementById('llmModalContent').innerHTML =
-                        '<div class="alert alert-danger">Error al cargar la información: ' + error.message + '</div>';
+                        '<div class="alert alert-danger bg-danger bg-opacity-20 border-0 text-white">Error al cargar la información: ' + error.message + '</div>';
                 })
                 .finally(() => {
-                    // Ocultar spinner y mostrar contenido
                     document.getElementById('llmModalLoading').style.display = 'none';
                     document.getElementById('llmModalContent').style.display = 'block';
                 });

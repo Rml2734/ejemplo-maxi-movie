@@ -1,63 +1,90 @@
 ﻿@model maxi_movie_mvc.Models.Pelicula
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Eliminar Película";
 }
 
-<h1>Delete</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Pelicula</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titulo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titulo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaLanzamiento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaLanzamiento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MinutosDuracion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MinutosDuracion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sinopsis)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sinopsis)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PosterUrlPortada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PosterUrlPortada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genero)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genero.Descripcion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Plataforma)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Plataforma.Nombre)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+            @* Tarjeta de Alerta Destructiva *@
+            <div class="card border-0 shadow-lg bg-dark text-light overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+
+                        @* Columna Izquierda: Póster dentro de Zona de Peligro *@
+                        <div class="col-md-4 bg-danger bg-opacity-10 d-flex align-items-center justify-content-center p-4 border-end border-danger border-opacity-20">
+                            @if (!string.IsNullOrEmpty(Model?.PosterUrlPortada))
+                            {
+                                <img src="@Model.PosterUrlPortada" alt="Póster de @Model.Titulo" class="img-fluid rounded shadow-lg border border-danger border-opacity-25" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="text-center text-danger text-opacity-50 py-5">
+                                    <span class="material-symbols-outlined display-1 mb-2">image_not_supported</span>
+                                    <p class="small fw-medium">Póster no disponible</p>
+                                </div>
+                            }
+                        </div>
+
+                        @* Columna Derecha: Detalles del Registro e Interfaz de Confirmación *@
+                        <div class="col-md-8 p-4 p-lg-5 d-flex flex-column justify-content-between">
+
+                            @* Bloque de Encabezado de Peligro *@
+                            <div>
+                                <div class="d-flex align-items-center gap-2 text-danger mb-3">
+                                    <span class="material-symbols-outlined fs-3">warning</span>
+                                    <h2 class="fs-4 fw-bold mb-0">¿Confirmas la eliminación de esta película?</h2>
+                                </div>
+                                <p class="text-muted small mb-4">Esta acción removerá de forma permanente el registro del catálogo y no se podrá deshacer.</p>
+
+                                @* Información Resumida en Ficha *@
+                                <div class="row g-3 bg-secondary bg-opacity-10 rounded p-3 mb-4">
+                                    <div class="col-12">
+                                        <span class="text-muted small d-block fw-medium">Título Comercial</span>
+                                        <span class="fs-5 fw-bold text-white">@Html.DisplayFor(model => model.Titulo)</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block fw-medium">Género</span>
+                                        <span class="text-white-50 small fw-semibold">@Model.Genero.Descripcion</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block fw-medium">Plataforma</span>
+                                        <span class="text-info small fw-semibold">@Model.Plataforma.Nombre</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block fw-medium">Fecha Lanzamiento</span>
+                                        <span class="text-white-50 small font-monospace">@Model.FechaLanzamiento.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block fw-medium">Duración</span>
+                                        <span class="text-white-50 small">@Model.MinutosDuracion minutos</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Formulario y Botones de Acción al pie *@
+                            <form asp-action="Delete">
+                                <input type="hidden" asp-for="Id" />
+
+                                <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-20">
+                                    <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 px-4">
+                                        <span class="material-symbols-outlined fs-5">arrow_back</span>
+                                        <span>Regresar al Catálogo</span>
+                                    </a>
+                                    <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-2 px-4 fw-medium">
+                                        <span class="material-symbols-outlined fs-5">delete_forever</span>
+                                        <span>Confirmar Borrado</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

@@ -1,60 +1,111 @@
 ﻿@model maxi_movie_mvc.Models.Pelicula
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de la Película";
 }
 
-<h1>Details</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
 
-<div>
-    <h4>Pelicula</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titulo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titulo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaLanzamiento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaLanzamiento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MinutosDuracion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MinutosDuracion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sinopsis)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sinopsis)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PosterUrlPortada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PosterUrlPortada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genero)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genero.Descripcion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Plataforma)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Plataforma.Nombre)
-        </dd>
-    </dl>
+            @* Tarjeta de Detalles Estilo Ficha *@
+            <div class="card border-0 shadow-lg bg-dark text-light overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+
+                        @* Columna Izquierda: El Póster en Grande *@
+                        <div class="col-md-4 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center p-4 border-end border-secondary border-opacity-20">
+                            @if (!string.IsNullOrEmpty(Model?.PosterUrlPortada))
+                            {
+                                <img src="@Model.PosterUrlPortada" alt="Póster de @Model.Titulo" class="img-fluid rounded shadow-lg" style="max-height: 450px; width: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-5">
+                                    <span class="material-symbols-outlined display-1 mb-2">image_not_supported</span>
+                                    <p>Póster no disponible</p>
+                                </div>
+                            }
+                        </div>
+
+                        @* Columna Derecha: Información y Sinopsis *@
+                        <div class="col-md-8 p-4 p-lg-5 d-flex flex-column">
+
+                            @* Encabezado de la Ficha *@
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 text-info mb-2">
+                                    <span class="material-symbols-outlined fs-4">movie</span>
+                                    <span class="text-uppercase fw-bold small letter-spacing-1">Ficha Técnica</span>
+                                </div>
+                                <h1 class="display-5 fw-bold text-white mb-3">@Html.DisplayFor(model => model.Titulo)</h1>
+
+                                @* Badges de Categoría *@
+                                <div class="d-flex flex-wrap gap-2 mb-4">
+                                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2">
+                                        @Model.Genero.Descripcion
+                                    </span>
+                                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+                                        Disponible en: @Model.Plataforma.Nombre
+                                    </span>
+                                </div>
+                            </div>
+
+                            @* Datos Rápidos (Iconos) *@
+                            <div class="row g-4 mb-4 border-top border-bottom border-secondary border-opacity-20 py-4">
+                                <div class="col-6 col-sm-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="material-symbols-outlined text-muted fs-2">calendar_month</span>
+                                        <div>
+                                            <span class="text-muted d-block small">Lanzamiento</span>
+                                            <span class="fw-bold text-white">@Model.FechaLanzamiento.ToString("dd MMM, yyyy")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="material-symbols-outlined text-muted fs-2">schedule</span>
+                                        <div>
+                                            <span class="text-muted d-block small">Duración</span>
+                                            <span class="fw-bold text-white">@Model.MinutosDuracion min</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Sinopsis *@
+                            <div class="mb-5 flex-grow-1">
+                                <h3 class="fs-5 fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                                    <span class="material-symbols-outlined text-info">description</span>
+                                    Sinopsis
+                                </h3>
+                                <p class="text-muted lh-lg" style="text-align: justify;">
+                                    @Html.DisplayFor(model => model.Sinopsis)
+                                </p>
+                            </div>
+
+                            @* Botones de Acción *@
+                            <div class="d-flex align-items-center justify-content-between pt-4 border-top border-secondary border-opacity-20">
+                                <a asp-action="Index" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 px-4">
+                                    <span class="material-symbols-outlined fs-5">arrow_back</span>
+                                    <span>Regresar</span>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-info d-inline-flex align-items-center gap-2 px-4 text-dark fw-bold">
+                                    <span class="material-symbols-outlined fs-5">edit</span>
+                                    <span>Editar Película</span>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    .letter-spacing-1 {
+        letter-spacing: 1.5px;
+    }
+</style>

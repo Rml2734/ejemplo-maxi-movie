@@ -1,25 +1,54 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "¡Ups! Algo salió mal";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+            @* Contenedor Principal del Error *@
+            <div class="card border-0 shadow-lg p-5 rounded-3 text-white mb-4" style="background-color: #212529;">
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                @* Icono Animado o Visual de Alerta *@
+                <div class="mb-4 d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-danger bg-opacity-10 text-danger" style="width: 80px; height: 80px;">
+                    <span class="material-symbols-outlined" style="font-size: 3.5rem;">error</span>
+                </div>
+
+                <h1 class="h3 fw-bold text-white mb-2">¡Ups! Algo salió mal</h1>
+                <p class="text-white-50 mb-4">Ha ocurrido un error inesperado mientras procesábamos tu solicitud. No te preocupes, el equipo de MaxiMovie ya fue notificado.</p>
+
+                @if (Model.ShowRequestId)
+                {
+                    <div class="bg-dark p-3 rounded-3 mb-4 d-inline-block border border-secondary border-opacity-10 mx-auto" style="max-width: 100%;">
+                        <span class="text-white-50 small text-uppercase tracking-wider d-block mb-1 fw-semibold">ID de la Solicitud</span>
+                        <code class="text-warning fs-6 text-break">@Model.RequestId</code>
+                    </div>
+                }
+
+                @* Botón de escape para mantener al usuario en la app *@
+                <div class="pt-2">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined fs-5">home</span>
+                        <span>Volver a la Cartelera</span>
+                    </a>
+                </div>
+            </div>
+
+            @* Sección Técnica Dinámica (Solo visible para ti en Desarrollo o útil para depurar) *@
+            <div class="card border-0 p-4 rounded-3 text-start bg-dark border border-secondary border-opacity-10">
+                <h3 class="fs-6 fw-bold text-warning mb-2 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined fs-5">terminal</span>
+                    <span>Modo de Desarrollo</span>
+                </h3>
+                <p class="text-white-50 small mb-2">
+                    Si estás viendo esta sección, significa que el entorno actual está configurado para mostrar detalles técnicos de depuración local.
+                </p>
+                <small class="text-danger d-block fw-semibold opacity-75">
+                    ⚠️ Advertencia: Esta sección detallada no debe habilitarse en entornos de producción (como Railway), ya que podría exponer metadatos sensibles de las excepciones a los usuarios finales.
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,7 +1,32 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Acceso Denegado";
 }
 
-<h2>No tienes acceso a esta pantalla.</h2>
+<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5 px-3">
+    <div class="text-center" style="max-width: 450px;">
+        @* Icono de advertencia estilizado con la paleta de la app *@
+        <div class="mb-4">
+            <span class="material-symbols-outlined text-danger d-inline-block" style="font-size: 80px; opacity: 0.85;">
+                gpp_bad
+            </span>
+        </div>
+
+        @* Código de Error sutil *@
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-1 small mb-3 font-monospace fw-bold">
+            ERROR 403
+        </span>
+
+        @* Mensajes *@
+        <h1 class="h3 text-white fw-bold mb-3">Acceso Restringido</h1>
+        <p class="text-white-50 mb-4 lh-base">
+            No tienes los permisos necesarios para ver esta pantalla. Si crees que es un error, por favor contacta al administrador.
+        </p>
+
+        @* Botón de escape *@
+        <div class="d-grid gap-2 col-8 mx-auto">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light btn-lg fs-6 fw-semibold shadow-sm py-2">
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+</main>

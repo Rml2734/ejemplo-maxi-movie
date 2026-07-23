@@ -102,3 +102,8 @@ body {
 [data-bs-theme="dark"] .form-select-lg.btn-outline-secondary:focus {
     color: #dee2e6;
 }
+
+select.form-select option {
+    background-color: #212529 !important; /* Fondo gris oscuro de Bootstrap */
+    color: #fff !important; /* Texto blanco limpio */
+}

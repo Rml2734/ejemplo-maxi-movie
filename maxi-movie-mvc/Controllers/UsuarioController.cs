@@ -128,13 +128,14 @@ namespace maxi_movie_mvc.Controllers
                 {
                     if (usuarioVM.ImagenPerfil is not null && usuarioVM.ImagenPerfil.Length > 0)
                     {
-                        // opcional: borrar la anterior (si no es placeholder)
-                        if (!string.IsNullOrWhiteSpace(usuarioActual.ImagenUrlPerfil))
+                        // Opcional: borrar la anterior si no es el placeholder por defecto
+                        if (!string.IsNullOrWhiteSpace(usuarioActual.ImagenUrlPerfil) && !usuarioActual.ImagenUrlPerfil.Contains("default-avatar.png"))
+                        {
                             await _imagenStorage.DeleteAsync(usuarioActual.ImagenUrlPerfil);
+                        }
 
                         var nuevaRuta = await _imagenStorage.SaveAsync(usuarioActual.Id, usuarioVM.ImagenPerfil);
                         usuarioActual.ImagenUrlPerfil = nuevaRuta;
-                        usuarioVM.ImagenUrlPerfil = nuevaRuta;
                     }
                 }
                 catch (Exception ex)
@@ -150,8 +151,11 @@ namespace maxi_movie_mvc.Controllers
 
                 if (resultado.Succeeded)
                 {
-                    ViewBag.Mensaje = "Perfil actualizado con éxito.";
-                    return View(usuarioVM);
+                    // Guardamos el mensaje en TempData para que resista la redirección
+                    TempData["Mensaje"] = "Perfil actualizado con éxito.";
+
+                    // 2. Aplicamos el patrón Post-Redirect-Get. Volvemos al método GET limpio.
+                    return RedirectToAction(nameof(MiPerfil));
                 }
                 else
                 {
@@ -161,8 +165,14 @@ namespace maxi_movie_mvc.Controllers
                     }
                 }
             }
+
+            // Si llegamos aquí por un error de validación, volvemos a asegurar que la foto actual no falte en la vista
+            var usuarioReintento = await _userManager.GetUserAsync(User);
+            usuarioVM.ImagenUrlPerfil = usuarioReintento.ImagenUrlPerfil;
+
             return View(usuarioVM);
         }
+
 
     }
 }
