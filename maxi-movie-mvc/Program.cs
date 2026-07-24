@@ -1,6 +1,7 @@
 ﻿using maxi_movie_mvc.Data;
 using maxi_movie_mvc.Models;
 using maxi_movie_mvc.Service;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,10 @@ if (!string.IsNullOrEmpty(databaseUrl))
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// --- Configuración de Data Protection en PostgreSQL ---
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<MovieDbContext>();
 
 // Add Identity
 builder.Services.AddIdentityCore<Usuario>(options =>

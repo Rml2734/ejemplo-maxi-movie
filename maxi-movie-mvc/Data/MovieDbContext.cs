@@ -1,10 +1,11 @@
 ﻿using maxi_movie_mvc.Models;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace maxi_movie_mvc.Data
 {
-    public class MovieDbContext : IdentityDbContext<Usuario>
+    public class MovieDbContext : IdentityDbContext<Usuario>, IDataProtectionKeyContext
     {
         public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
         {
@@ -15,6 +16,9 @@ namespace maxi_movie_mvc.Data
         public DbSet<Plataforma> Plataformas { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Favorito> Favoritos { get; set; }
+
+        // Tabla donde ASP.NET Data Protection almacenará las claves de cifrado
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
