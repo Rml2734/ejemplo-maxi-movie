@@ -68,12 +68,12 @@ namespace maxi_movie_mvc.Data
                 new Plataforma {
                     Nombre = "Netflix",
                     Url = "https://www.netflix.com",
-                    LogoUrl = "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+                    LogoUrl = "/images/plataformas/netflix.webp"
                 },
                 new Plataforma {
                     Nombre = "Prime Video",
                     Url = "https://www.primevideo.com",
-                    LogoUrl = "https://upload.wikimedia.org/wikipedia/commons/6/6d/Prime_Video_logo_%282024%29.svg"
+                    LogoUrl = "/images/plataformas/primevideo.webp"
                 },
                 new Plataforma {
                     Nombre = "Disney+",

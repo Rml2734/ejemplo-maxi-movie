@@ -1,6 +1,7 @@
 ﻿using maxi_movie_mvc.Data;
 using maxi_movie_mvc.Models;
 using maxi_movie_mvc.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,18 @@ namespace maxi_movie_mvc.Controllers
         private readonly MovieDbContext _context;
         private const int PageSize = 8;
         private readonly LlmService _llmService;
+        private readonly UserManager<Usuario> _userManager; // 👈 Inyectamos UserManager
 
-        public HomeController(ILogger<HomeController> logger, MovieDbContext context, LlmService llmService)
+        public HomeController(
+            ILogger<HomeController> logger,
+            MovieDbContext context,
+            LlmService llmService,
+            UserManager<Usuario> userManager)
         {
             _logger = logger;
             _context = context;
             _llmService = llmService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(int pagina = 1, string txtBusqueda = "", int generoId = 0, string vista = "grid")
@@ -70,17 +77,35 @@ namespace maxi_movie_mvc.Controllers
 
         public async Task<IActionResult> Details(int Id)
         {
+            // Validar si el usuario autenticado es Admin
+            bool esAdmin = false;
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    esAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                }
+            }
+
+            // Filtrar reseñas: si es admin trae todas, si no, omite las ocultas
             var pelicula = await _context.Peliculas
                 .Include(p => p.Genero)
-                .Include(p => p.ListaReviews)
-                .ThenInclude(r => r.Usuario)
+                .Include(p => p.ListaReviews.Where(r => !r.EstaOculta || esAdmin))
+                    .ThenInclude(r => r.Usuario)
                 .FirstOrDefaultAsync(p => p.Id == Id);
 
+            if (pelicula == null)
+            {
+                return NotFound();
+            }
+
             ViewBag.UserReview = false;
-            if (User?.Identity?.IsAuthenticated == true && pelicula.ListaReviews != null)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                ViewBag.UserReview = !(pelicula.ListaReviews.FirstOrDefault(r => r.UsuarioId == userId) == null);
+                ViewBag.UserReview = await _context.Reviews
+                    .AnyAsync(r => r.PeliculaId == Id && r.UsuarioId == userId);
             }
 
             return View(pelicula);
@@ -104,7 +129,6 @@ namespace maxi_movie_mvc.Controllers
             {
                 var spoiler = await _llmService.ObtenerSpoilerAsync(titulo);
                 return Json(new { success = true, data = spoiler });
-
             }
             catch (Exception ex)
             {
@@ -125,9 +149,5 @@ namespace maxi_movie_mvc.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
-      
-
     }
 }
-

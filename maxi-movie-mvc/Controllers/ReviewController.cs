@@ -57,13 +57,13 @@ namespace maxi_movie_mvc.Controllers
             {
                 review.UsuarioId = _userManager.GetUserId(User);
 
-                // Validación de si ya existe una review del mismo usuario para la misma película
+                // 👈 Busca si ya existe reseña sin importar si está oculta o no
                 var reviewExiste = _context.Reviews
                     .FirstOrDefault(r => r.PeliculaId == review.PeliculaId && r.UsuarioId == review.UsuarioId);
 
                 if (reviewExiste != null)
                 {
-                    TempData["ReviewExiste"] = "Ya has realizado una reseña para esta película.";
+                    TempData["ReviewExiste"] = "Ya tienes una reseña registrada para esta película.";
                     return RedirectToAction("Details", "Home", new { id = review.PeliculaId });
                 }
 
@@ -163,25 +163,62 @@ namespace maxi_movie_mvc.Controllers
             }
         }
 
-        // GET: ReviewController/Delete/5
-        public ActionResult Delete(int id)
+        // POST: Review/Delete/5
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, string? returnUrl = null)
         {
-            return View();
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            // Solo el autor o el Admin pueden eliminar
+            if (review.UsuarioId != user.Id && !isAdmin)
+                return Forbid();
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            TempData["ReviewExito"] = "La reseña fue eliminada con éxito.";
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Details", "Home", new { id = review.PeliculaId });
         }
 
-        // POST: ReviewController/Delete/5
+        // POST: Review/AlternarOcultar/5
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> AlternarOcultar(int id, string? returnUrl = null)
         {
-            try
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+                return NotFound();
+
+            review.EstaOculta = !review.EstaOculta;
+            _context.Reviews.Update(review);
+            await _context.SaveChangesAsync();
+
+            TempData["ReviewExito"] = review.EstaOculta
+                ? "La reseña ha sido ocultada."
+                : "La reseña vuelve a ser visible.";
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                return RedirectToAction(nameof(Index));
+                return Redirect(returnUrl);
             }
-            catch
-            {
-                return View();
-            }
+
+            return RedirectToAction("Details", "Home", new { id = review.PeliculaId });
         }
+
+
     }
 }

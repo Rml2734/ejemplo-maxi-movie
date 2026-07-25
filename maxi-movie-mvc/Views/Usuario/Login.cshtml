@@ -31,7 +31,7 @@
                                     <input class="form-check-input m-0" asp-for="Recordarme" />
                                     <label class="form-check-label text-light small ms-2" asp-for="Recordarme">Recordarme</label>
                                 </div>
-                                <a class="text-info small text-decoration-none" href="#">¿Olvidaste tu contraseña?</a>
+                                <a class="text-info small text-decoration-none" asp-controller="Usuario" asp-action="RecuperarPassword">¿Olvidaste tu contraseña?</a>
                             </div>
 
                             <div class="d-grid">

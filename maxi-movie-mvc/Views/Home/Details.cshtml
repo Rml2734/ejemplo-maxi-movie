@@ -135,6 +135,17 @@
                 </div>
             }
 
+            @if (TempData["ReviewExito"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 text-white bg-success bg-opacity-20 d-flex align-items-center justify-content-between p-3" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-success">check_circle</span>
+                        <span>@TempData["ReviewExito"]</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             @* REVIEWS DE USUARIOS *@
             <div class="mt-5">
                 <h2 class="h4 fw-bold mb-4 text-white d-flex align-items-center gap-2">
@@ -143,14 +154,20 @@
                 <div class="d-flex flex-column gap-3">
                     @foreach (var item in Model.ListaReviews)
                     {
-                        <div class="card border-0 review-card p-4 rounded-3" style="background-color: #1f2327;">
+                        <div class="card border-0 review-card p-4 rounded-3 @(item.EstaOculta ? "border border-danger border-opacity-50" : "")" style="background-color: #1f2327;">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="d-flex align-items-center">
                                     <img alt="@item.Usuario.Nombre" class="rounded-circle me-3 border border-secondary border-opacity-25" height="42"
                                          src="@(string.IsNullOrEmpty(item.Usuario.ImagenUrlPerfil) ? "/images/default-avatar.png" : item.Usuario.ImagenUrlPerfil)"
                                          onerror="this.src='/images/default-avatar.png'" width="42" style="object-fit: cover;" />
                                     <div>
-                                        <h6 class="mb-0 text-white fw-bold">@string.Concat(item.Usuario.Nombre, " ", item.Usuario.Apellido)</h6>
+                                        <h6 class="mb-0 text-white fw-bold d-flex align-items-center gap-2">
+                                            @string.Concat(item.Usuario.Nombre, " ", item.Usuario.Apellido)
+                                            @if (item.EstaOculta)
+                                            {
+                                                <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 fs-6 fw-normal px-2 py-0.5">Oculta</span>
+                                            }
+                                        </h6>
                                         <small class="text-white-50 font-monospace" style="font-size: 0.8rem;">@item.FechaReview.ToShortDateString()</small>
                                     </div>
                                 </div>
@@ -172,12 +189,32 @@
 
                             @if (SignInManager.IsSignedIn(User))
                             {
-                                @if (UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin").Result)
+                                var currentUser = await UserManager.GetUserAsync(User);
+                                var esAdmin = await UserManager.IsInRoleAsync(currentUser, "Admin");
+
+                                @if (esAdmin)
                                 {
-                                    <div class="mt-3 text-end">
-                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2 px-3">
-                                            <span class="material-symbols-outlined align-middle fs-6 me-1">edit</span>Editar Reseña
+                                    <div class="mt-3 d-flex justify-content-end gap-2">
+                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2 px-3 d-flex align-items-center gap-1">
+                                            <span class="material-symbols-outlined fs-6">edit</span> Editar
                                         </a>
+
+                                        @* Botón Alternar Ocultar / Mostrar *@
+                                        <form asp-controller="Review" asp-action="AlternarOcultar" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                            <button type="submit" class="btn btn-sm @(item.EstaOculta ? "btn-outline-info" : "btn-outline-secondary") rounded-2 px-3 d-flex align-items-center gap-1">
+                                                <span class="material-symbols-outlined fs-6">@(item.EstaOculta ? "visibility" : "visibility_off")</span>
+                                                @(item.EstaOculta ? "Mostrar" : "Ocultar")
+                                            </button>
+                                        </form>
+
+                                        @* Botón Eliminar *@
+                                        <form asp-controller="Review" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar permanentemente esta reseña?');">
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-2 px-3 d-flex align-items-center gap-1">
+                                                <span class="material-symbols-outlined fs-6">delete</span> Eliminar
+                                            </button>
+                                        </form>
                                     </div>
                                 }
                             }

@@ -22,8 +22,13 @@ namespace maxi_movie_mvc.Models
         [DataType(DataType.Date)]
         public DateTime FechaReview { get; set; } = DateTime.UtcNow; // Forzar UTC por defecto
 
+        // 👈 NUEVA PROPIEDAD DE MODERACIÓN
+        public bool EstaOculta { get; set; } = false;
+
+
         // Versión de fila usando uint para el control de concurrencia nativo de PostgreSQL (xmin)
         //public uint RowVersion { get; set; }
+
     }
 
     public class ReviewCreateViewModel

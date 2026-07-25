@@ -45,7 +45,8 @@ builder.Services.AddIdentityCore<Usuario>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MovieDbContext>()
-    .AddSignInManager();
+    .AddSignInManager()
+    .AddDefaultTokenProviders(); // 👈 ¡LÍNEA AGREGADA PARA GENERAR TOKENS DE RECUPERACIÓN!
 
 // Manejo de la cookie
 builder.Services.AddAuthentication(opt =>
@@ -73,10 +74,10 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 // --- Servicio LLM (Gemini) Seguro ---
 // Lee desde GOOGLE_API_KEY o GEMINI_API_KEY o appsettings/secrets.json
 string geminiApiKey = builder.Configuration["GOOGLE_API_KEY"]
-                   ?? builder.Configuration["GEMINI_API_KEY"]
-                   ?? Environment.GetEnvironmentVariable("GOOGLE_API_KEY")
-                   ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY")
-                   ?? "";
+                    ?? builder.Configuration["GEMINI_API_KEY"]
+                    ?? Environment.GetEnvironmentVariable("GOOGLE_API_KEY")
+                    ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY")
+                    ?? "";
 
 if (!string.IsNullOrEmpty(geminiApiKey))
 {
@@ -106,9 +107,9 @@ using (var scope = app.Services.CreateScope())
         // 2. Ejecuta el sembrado de datos (roles, usuario admin, géneros, etc.)
         var userManager = services.GetRequiredService<UserManager<Usuario>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        var configuration = services.GetRequiredService<IConfiguration>(); // <-- Se obtiene el servicio de configuración
+        var configuration = services.GetRequiredService<IConfiguration>();
 
-        await DbSeeder.Seed(context, userManager, roleManager, configuration); // <-- Se pasa 'configuration'
+        await DbSeeder.Seed(context, userManager, roleManager, configuration);
     }
     catch (Exception ex)
     {
@@ -125,6 +126,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseAuthorization();
