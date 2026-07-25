@@ -17,7 +17,7 @@ namespace maxi_movie_mvc.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Favorito> Favoritos { get; set; }
 
-        // Tabla donde ASP.NET Data Protection almacenará las claves de cifrado
+        // Tabla donde ASP.NET Data Protection almacenará las claves de cifrado!
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

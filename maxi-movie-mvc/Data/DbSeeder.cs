@@ -5,43 +5,60 @@ using System.Threading.Tasks;
 using maxi_movie_mvc.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace maxi_movie_mvc.Data
 {
     public class DbSeeder
     {
-        public static async Task Seed(MovieDbContext context, UserManager<Usuario> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task Seed(
+            MovieDbContext context,
+            UserManager<Usuario> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration) // <-- 1. Recibimos IConfiguration aquí
         {
-            // Asegura que la base de datos esté creada
             context.Database.EnsureCreated();
 
-            // 1. Control al inicio: Si YA hay películas, significa que el Seeder ya se ejecutó. No hacemos nada.
             if (await context.Peliculas.AnyAsync())
                 return;
 
-            // 2. Crear Rol Admin si no existe
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            // Crear usuario admin si no existe
-            var adminUser = await userManager.FindByEmailAsync("admin@admin.com");
+
+            // 2. Leemos las credenciales desde la configuración (secrets.json / appsettings / env vars)
+            var adminEmail = configuration["AdminCredentials:Email"] ?? "admin@admin.com";
+            var adminPassword = configuration["AdminCredentials:Password"];
+
+            // 2. Si la contraseña viene vacía o nula, no intentamos crear el admin
+            if (string.IsNullOrWhiteSpace(adminPassword))
+            {
+                // Log o aviso opcional:
+                Console.WriteLine("⚠️ WARNING: AdminCredentials:Password no está configurado. Se omite la creación del usuario Admin.");
+            }
+            else
+            {
+
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
                 adminUser = new Usuario
                 {
-                    UserName = "admin@admin.com",
-                    Email = "admin@admin.com",
+                    UserName = adminEmail,
+                    Email = adminEmail,
                     Nombre = "Admin",
                     Apellido = "Sistema",
                     ImagenUrlPerfil = "/images/default-avatar.png"
                 };
 
-                var result = await userManager.CreateAsync(adminUser, "Admin123");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                    // 3. Creamos el usuario usando la contraseña inyectada dinámicamente
+                    var result = await userManager.CreateAsync(adminUser, adminPassword);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
                 }
             }
 

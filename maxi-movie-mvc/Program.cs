@@ -106,7 +106,9 @@ using (var scope = app.Services.CreateScope())
         // 2. Ejecuta el sembrado de datos (roles, usuario admin, géneros, etc.)
         var userManager = services.GetRequiredService<UserManager<Usuario>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        await DbSeeder.Seed(context, userManager, roleManager);
+        var configuration = services.GetRequiredService<IConfiguration>(); // <-- Se obtiene el servicio de configuración
+
+        await DbSeeder.Seed(context, userManager, roleManager, configuration); // <-- Se pasa 'configuration'
     }
     catch (Exception ex)
     {
