@@ -4,9 +4,35 @@
 @model Pelicula
 @{
     ViewData["Title"] = "Detalles de la Película";
+
+    // Cálculo y desglose del tiempo de duración en horas y minutos
     int horas = Model.MinutosDuracion / 60;
     int minutos = Model.MinutosDuracion % 60;
+
+    // Extracción del año de lanzamiento para la etiqueta de metadatos
     int anio = Model.FechaLanzamiento.Year;
+
+    // Lógica dinámica de cálculo de reseñas y estado de calificación
+    var reviews = Model.ListaReviews ?? new List<Review>();
+    int totalReviews = reviews.Count;
+    bool tieneReviews = totalReviews > 0;
+
+    // Cálculo del promedio general de calificación (redondeado a 1 decimal)
+    double promedio = tieneReviews ? Math.Round(reviews.Average(r => r.Rating), 1) : 0.0;
+
+    // Conteo de estrellas por nivel individual (1 a 5 estrellas)
+    int c5 = reviews.Count(r => r.Rating == 5);
+    int c4 = reviews.Count(r => r.Rating == 4);
+    int c3 = reviews.Count(r => r.Rating == 3);
+    int c2 = reviews.Count(r => r.Rating == 2);
+    int c1 = reviews.Count(r => r.Rating == 1);
+
+    // Porcentajes para las barras de progreso estáticas del desglose de calificaciones
+    int p5 = tieneReviews ? (int)Math.Round((double)c5 / totalReviews * 100) : 0;
+    int p4 = tieneReviews ? (int)Math.Round((double)c4 / totalReviews * 100) : 0;
+    int p3 = tieneReviews ? (int)Math.Round((double)c3 / totalReviews * 100) : 0;
+    int p2 = tieneReviews ? (int)Math.Round((double)c2 / totalReviews * 100) : 0;
+    int p1 = tieneReviews ? (int)Math.Round((double)c1 / totalReviews * 100) : 0;
 }
 
 <main class="container my-4 text-white">
@@ -23,7 +49,7 @@
             @* Badges de Metadatos Estilizados *@
             <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
                 <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-2 fw-semibold">
-                    @Model.Genero.Descripcion
+                    @Model.Genero?.Descripcion
                 </span>
                 <span class="badge bg-secondary bg-opacity-20 text-white-50 px-3 py-2 rounded-2 border border-secondary border-opacity-10">
                     <span class="material-symbols-outlined align-middle fs-6 me-1">schedule</span>@horas h @minutos m
@@ -31,77 +57,107 @@
                 <span class="badge bg-secondary bg-opacity-20 text-white-50 px-3 py-2 rounded-2 border border-secondary border-opacity-10">
                     @anio
                 </span>
+
+                @* Badge de calificación / Estado cuando no hay reseñas *@
+                @if (tieneReviews)
+                {
+                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-2 fw-semibold d-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon fs-6">star</span> @promedio
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary bg-opacity-20 text-white-50 px-3 py-2 rounded-2 border border-secondary border-opacity-10">
+                        Sin calificaciones aún
+                    </span>
+                }
             </div>
 
             <p class="lead text-white-50 lh-base mb-4" style="text-align: justify;">@Model.Sinopsis</p>
 
-            @* PANEL DE CALIFICACIÓN COMPLETO (TEMA OSCURO PREMIUM) *@
-            <div class="card border-0 p-4 my-4 rounded-3 shadow-sm" style="background-color: #212529;">
-                <div class="row align-items-center">
-                    <div class="col-sm-4 text-center text-sm-start border-end-sm border-secondary border-opacity-25 pe-sm-4">
-                        <p class="display-2 fw-bolder text-white mb-0 lh-1">4.5</p>
-                        <div class="my-2 d-flex justify-content-center justify-content-sm-start text-warning gap-1">
-                            <span class="material-symbols-outlined fill-icon">star</span>
-                            <span class="material-symbols-outlined fill-icon">star</span>
-                            <span class="material-symbols-outlined fill-icon">star</span>
-                            <span class="material-symbols-outlined fill-icon">star</span>
-                            <span class="material-symbols-outlined">star_half</span>
+            @* PANEL DE CALIFICACIÓN COMPLETO (Se oculta si no hay reseñas) *@
+            @if (tieneReviews)
+            {
+                <div class="card border-0 p-4 my-4 rounded-3 shadow-sm" style="background-color: #212529;">
+                    <div class="row align-items-center">
+                        @* Sección izquierda: Puntaje global y estrellas *@
+                        <div class="col-sm-4 text-center text-sm-start border-end-sm border-secondary border-opacity-25 pe-sm-4">
+                            <p class="display-2 fw-bolder text-white mb-0 lh-1">@promedio.ToString("0.0")</p>
+                            <div class="my-2 d-flex justify-content-center justify-content-sm-start text-warning gap-1">
+                                @* Renderizado dinámico de estrellas llenas, medias y vacías *@
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(promedio))
+                                    {
+                                        <span class="material-symbols-outlined fill-icon">star</span>
+                                    }
+                                    else if (i - promedio <= 0.5)
+                                    {
+                                        <span class="material-symbols-outlined">star_half</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="material-symbols-outlined text-muted">grade</span>
+                                    }
+                                }
+                            </div>
+                            <p class="text-white-50 small mb-0 fw-medium">@totalReviews @(totalReviews == 1 ? "review total" : "reviews totales")</p>
                         </div>
-                        <p class="text-white-50 small mb-0 fw-medium">125 reviews totales</p>
-                    </div>
 
-                    <div class="col-sm-8 mt-4 mt-sm-0 ps-sm-4">
-                        <div class="row align-items-center gx-2 gy-2">
-                            @* Fila de 5 estrellas *@
-                            <div class="col-1 text-end text-white-50 small fw-bold">5</div>
-                            <div class="col-9">
-                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
-                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                        @* Sección derecha: Desglose porcentual por barras de progreso *@
+                        <div class="col-sm-8 mt-4 mt-sm-0 ps-sm-4">
+                            <div class="row align-items-center gx-2 gy-2">
+                                @* Fila 5 Estrellas *@
+                                <div class="col-1 text-end text-white-50 small fw-bold">5</div>
+                                <div class="col-9">
+                                    <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: @p5%" aria-valuenow="@p5" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-2 text-white-50 text-end small fw-semibold">40%</div>
+                                <div class="col-2 text-white-50 text-end small fw-semibold">@p5%</div>
 
-                            @* Fila de 4 estrellas *@
-                            <div class="col-1 text-end text-white-50 small fw-bold">4</div>
-                            <div class="col-9">
-                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
-                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                @* Fila 4 Estrellas *@
+                                <div class="col-1 text-end text-white-50 small fw-bold">4</div>
+                                <div class="col-9">
+                                    <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: @p4%" aria-valuenow="@p4" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-2 text-white-50 text-end small fw-semibold">30%</div>
+                                <div class="col-2 text-white-50 text-end small fw-semibold">@p4%</div>
 
-                            @* Fila de 3 estrellas *@
-                            <div class="col-1 text-end text-white-50 small fw-bold">3</div>
-                            <div class="col-9">
-                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
-                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                @* Fila 3 Estrellas *@
+                                <div class="col-1 text-end text-white-50 small fw-bold">3</div>
+                                <div class="col-9">
+                                    <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: @p3%" aria-valuenow="@p3" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-2 text-white-50 text-end small fw-semibold">15%</div>
+                                <div class="col-2 text-white-50 text-end small fw-semibold">@p3%</div>
 
-                            @* Fila de 2 estrellas *@
-                            <div class="col-1 text-end text-white-50 small fw-bold">2</div>
-                            <div class="col-9">
-                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
-                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                @* Fila 2 Estrellas *@
+                                <div class="col-1 text-end text-white-50 small fw-bold">2</div>
+                                <div class="col-9">
+                                    <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: @p2%" aria-valuenow="@p2" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-2 text-white-50 text-end small fw-semibold">10%</div>
+                                <div class="col-2 text-white-50 text-end small fw-semibold">@p2%</div>
 
-                            @* Fila de 1 estrella *@
-                            <div class="col-1 text-end text-white-50 small fw-bold">1</div>
-                            <div class="col-9">
-                                <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
-                                    <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                                @* Fila 1 Estrella *@
+                                <div class="col-1 text-end text-white-50 small fw-bold">1</div>
+                                <div class="col-9">
+                                    <div class="progress rounded-pill bg-dark bg-opacity-50" style="height: 6px;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: @p1%" aria-valuenow="@p1" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
+                                <div class="col-2 text-white-50 text-end small fw-semibold">@p1%</div>
                             </div>
-                            <div class="col-2 text-white-50 text-end small fw-semibold">5%</div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
 
-            @* Botones de Acción Modificados para Mayor Simetría *@
+            @* Botones de Acción *@
             <div class="row g-2 my-4">
                 <div class="col-sm-4">
                     <button onclick="cargarLlm('Resumen', '@Model.Titulo')" class="btn btn-primary w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3">
@@ -116,7 +172,7 @@
                     </button>
                 </div>
                 <div class="col-sm-4">
-                    <button @(ViewBag.UserReview ? "disabled" : "") class="btn btn-secondary w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3"
+                    <button @(ViewBag.UserReview == true ? "disabled" : "") class="btn btn-secondary w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2 rounded-3"
                             type="button" data-bs-toggle="modal" data-bs-target="#createReviewModal">
                         <span class="material-symbols-outlined">add_notes</span>
                         <span>Crear Reseña</span>
@@ -124,6 +180,7 @@
                 </div>
             </div>
 
+            @* Notificaciones dinámicas mediante TempData *@
             @if (TempData["ReviewExiste"] != null)
             {
                 <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 text-white bg-danger bg-opacity-20 d-flex align-items-center justify-content-between p-3" role="alert">
@@ -151,76 +208,104 @@
                 <h2 class="h4 fw-bold mb-4 text-white d-flex align-items-center gap-2">
                     <span class="material-symbols-outlined text-primary">forum</span> Reseñas de la comunidad
                 </h2>
-                <div class="d-flex flex-column gap-3">
-                    @foreach (var item in Model.ListaReviews)
-                    {
-                        <div class="card border-0 review-card p-4 rounded-3 @(item.EstaOculta ? "border border-danger border-opacity-50" : "")" style="background-color: #1f2327;">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="d-flex align-items-center">
-                                    <img alt="@item.Usuario.Nombre" class="rounded-circle me-3 border border-secondary border-opacity-25" height="42"
-                                         src="@(string.IsNullOrEmpty(item.Usuario.ImagenUrlPerfil) ? "/images/default-avatar.png" : item.Usuario.ImagenUrlPerfil)"
-                                         onerror="this.src='/images/default-avatar.png'" width="42" style="object-fit: cover;" />
-                                    <div>
-                                        <h6 class="mb-0 text-white fw-bold d-flex align-items-center gap-2">
-                                            @string.Concat(item.Usuario.Nombre, " ", item.Usuario.Apellido)
-                                            @if (item.EstaOculta)
+
+                @if (tieneReviews)
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var item in reviews)
+                        {
+                            <div class="card border-0 review-card p-4 rounded-3 @(item.EstaOculta ? "border border-danger border-opacity-50" : "")" style="background-color: #1f2327;">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="d-flex align-items-center">
+                                        @* Avatar del usuario con imagen por defecto de respaldo si no existe *@
+                                        <img alt="@item.Usuario?.Nombre" class="rounded-circle me-3 border border-secondary border-opacity-25" height="42"
+                                             src="@(string.IsNullOrEmpty(item.Usuario?.ImagenUrlPerfil) ? "/images/default-avatar.png" : item.Usuario.ImagenUrlPerfil)"
+                                             onerror="this.src='/images/default-avatar.png'" width="42" style="object-fit: cover;" />
+                                        <div>
+                                            <h6 class="mb-0 text-white fw-bold d-flex align-items-center gap-2">
+                                                @string.Concat(item.Usuario?.Nombre, " ", item.Usuario?.Apellido)
+                                                @if (item.EstaOculta)
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 fs-6 fw-normal px-2 py-0.5">Oculta</span>
+                                                }
+                                            </h6>
+                                            <small class="text-white-50 font-monospace" style="font-size: 0.8rem;">@item.FechaReview.ToShortDateString()</small>
+                                        </div>
+                                    </div>
+                                    @* Calificación individual de la reseña representada en estrellas *@
+                                    <div class="text-warning d-flex gap-0.5">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= item.Rating)
                                             {
-                                                <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 fs-6 fw-normal px-2 py-0.5">Oculta</span>
+                                                <span class="material-symbols-outlined fs-5 fill-icon">star</span>
                                             }
-                                        </h6>
-                                        <small class="text-white-50 font-monospace" style="font-size: 0.8rem;">@item.FechaReview.ToShortDateString()</small>
+                                            else
+                                            {
+                                                <span class="material-symbols-outlined fs-5 text-muted">grade</span>
+                                            }
+                                        }
                                     </div>
                                 </div>
-                                <div class="text-warning d-flex gap-0.5">
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        if (i <= item.Rating)
-                                        {
-                                            <span class="material-symbols-outlined fs-5 fill-icon">star</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="material-symbols-outlined fs-5 text-muted">grade</span>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <p class="mb-0 text-white-50 lh-base pe-lg-4" style="font-size: 0.95rem;">@item.Comentario</p>
+                                <p class="mb-0 text-white-50 lh-base pe-lg-4" style="font-size: 0.95rem;">@item.Comentario</p>
 
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                var currentUser = await UserManager.GetUserAsync(User);
-                                var esAdmin = await UserManager.IsInRoleAsync(currentUser, "Admin");
-
-                                @if (esAdmin)
+                                @* Controles de moderación exclusivos para administradores autentiados *@
+                                @if (SignInManager.IsSignedIn(User))
                                 {
-                                    <div class="mt-3 d-flex justify-content-end gap-2">
-                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2 px-3 d-flex align-items-center gap-1">
-                                            <span class="material-symbols-outlined fs-6">edit</span> Editar
-                                        </a>
+                                    var currentUser = await UserManager.GetUserAsync(User);
+                                    var esAdmin = currentUser != null && await UserManager.IsInRoleAsync(currentUser, "Admin");
 
-                                        @* Botón Alternar Ocultar / Mostrar *@
-                                        <form asp-controller="Review" asp-action="AlternarOcultar" asp-route-id="@item.Id" method="post" class="d-inline">
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                                            <button type="submit" class="btn btn-sm @(item.EstaOculta ? "btn-outline-info" : "btn-outline-secondary") rounded-2 px-3 d-flex align-items-center gap-1">
-                                                <span class="material-symbols-outlined fs-6">@(item.EstaOculta ? "visibility" : "visibility_off")</span>
-                                                @(item.EstaOculta ? "Mostrar" : "Ocultar")
-                                            </button>
-                                        </form>
+                                    if (esAdmin)
+                                    {
+                                        <div class="mt-3 d-flex justify-content-end gap-2">
+                                            @* Botón para editar la reseña *@
+                                            <a asp-controller="Review" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2 px-3 d-flex align-items-center gap-1">
+                                                <span class="material-symbols-outlined fs-6">edit</span> Editar
+                                            </a>
 
-                                        @* Botón Eliminar *@
-                                        <form asp-controller="Review" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar permanentemente esta reseña?');">
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-2 px-3 d-flex align-items-center gap-1">
-                                                <span class="material-symbols-outlined fs-6">delete</span> Eliminar
-                                            </button>
-                                        </form>
-                                    </div>
+                                            @* Formulario para alternar visibilidad (Ocultar/Mostrar) *@
+                                            <form asp-controller="Review" asp-action="AlternarOcultar" asp-route-id="@item.Id" method="post" class="d-inline">
+                                                <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                                <button type="submit" class="btn btn-sm @(item.EstaOculta ? "btn-outline-info" : "btn-outline-secondary") rounded-2 px-3 d-flex align-items-center gap-1">
+                                                    <span class="material-symbols-outlined fs-6">@(item.EstaOculta ? "visibility" : "visibility_off")</span>
+                                                    @(item.EstaOculta ? "Mostrar" : "Ocultar")
+                                                </button>
+                                            </form>
+
+                                            @* Formulario para eliminación permanente con confirmación previa *@
+                                            <form asp-controller="Review" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar permanentemente esta reseña?');">
+                                                <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-2 px-3 d-flex align-items-center gap-1">
+                                                    <span class="material-symbols-outlined fs-6">delete</span> Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
                                 }
-                            }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    @* EMPTY STATE: Diseño elegante cuando no hay reseñas *@
+                    <div class="card border-0 p-5 rounded-3 text-center my-3" style="background-color: #1f2327;">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3 mx-auto" style="width: 64px; height: 64px;">
+                            <span class="material-symbols-outlined fs-2">rate_review</span>
                         </div>
-                    }
-                </div>
+                        <h5 class="fw-bold text-white mb-2">Aún no hay reseñas para esta película</h5>
+                        <p class="text-white-50 mb-4 mx-auto" style="max-width: 480px;">
+                            ¡Sé el primero en compartir tu opinión con la comunidad de MaxiMovie!
+                        </p>
+                        <div>
+                            <button @(ViewBag.UserReview == true ? "disabled" : "") class="btn btn-primary px-4 py-2.5 fw-semibold d-inline-flex align-items-center gap-2 rounded-3"
+                                    type="button" data-bs-toggle="modal" data-bs-target="#createReviewModal">
+                                <span class="material-symbols-outlined fs-5">edit_note</span>
+                                <span>Escribir la primera reseña</span>
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -228,12 +313,14 @@
 
 @* Inicialización de ViewModels para Partials *@
 @{
+    // ViewModel secundario para la creación de reseñas mediante modal
     var reviewViewModel = new ReviewCreateViewModel
     {
         PeliculaId = Model.Id,
         PeliculaTitulo = Model.Titulo
     };
 
+    // ViewModel para controlar la ventana modal de servicios de IA (LLM)
     var llmViewModel = new ModalLlmViewModel
     {
         Tipo = "",
@@ -241,52 +328,80 @@
         SpoilerResumen = ""
     };
 }
+
+@* Carga de vistas parciales modales *@
 <partial name="~/Views/Review/_CreateReview.cshtml" model="reviewViewModel" />
 <partial name="~/Views/Home/_ModalLlm.cshtml" model="llmViewModel" />
 
+@* Reglas de CSS personalizadas para ajustar la UI y los iconos *@
 <style>
-    .fill-icon {
-        font-variant-numeric: normal;
-        font-image: none;
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
+     /* Estilo para rellenar completamente los iconos de Material Symbols */
+     .fill-icon {
+         font-variant-numeric: normal;
+         font-image: none;
+         font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+     }
 
+     /* Borde divisor vertical para pantallas medianas/grandes en el panel de calificaciones */
     @@media (min-width: 576px) {
-        .border-end-sm {
-            border-end: 1px solid rgba(255,255,255,0.1) !important;
-        }
-    }
+         .border-end-sm {
+             border-end: 1px solid rgba(255,255,255,0.1) !important;
+         }
+     }
 </style>
 
 @section Scripts {
     <script>
+        /**
+         * Realiza una solicitud AJAX vía Fetch al backend para obtener un Resumen o Spoiler de la película mediante IA,
+         * actualizando dinámicamente el contenido del modal `llmModal`.
+         * @@param {string} tipo - El tipo de contenido a consultar ('Resumen' o 'Spoiler').
+         * @@param {string} titulo - El título de la película.
+         */
         function cargarLlm(tipo, titulo) {
+            // Inicialización de la instancia modal de Bootstrap
             const modal = new bootstrap.Modal(document.getElementById('llmModal'));
             document.getElementById('modalTipoTexto').textContent = tipo;
             document.getElementById('modalPeliculaTexto').textContent = titulo;
 
+            // Ajuste visual del estado de carga
             document.getElementById('llmModalLoading').style.display = 'block';
             document.getElementById('llmModalContent').style.display = 'none';
 
             modal.show();
 
+            // Construcción dinámica del endpoint según el botón presionado
             const url = tipo === 'Spoiler'
                 ? '@Url.Action("Spoiler", "Home")?titulo=' + encodeURIComponent(titulo)
                 : '@Url.Action("Resumen", "Home")?titulo=' + encodeURIComponent(titulo);
 
+            // Petición asíncrona a los controladores de ASP.NET Core
             fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    // Si el usuario no está autenticado o es redirigido al Login
+                    if (response.redirected || response.status === 401) {
+                        throw new Error("Debes iniciar sesión para consultar el resumen o spoiler.");
+                    }
+                    if (!response.ok) {
+                        throw new Error("Ocurrió un error al procesar la solicitud.");
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         document.getElementById('llmModalContent').innerHTML = '<p class="text-white-50 lh-base">' + data.data + '</p>';
                     } else {
                         document.getElementById('llmModalContent').innerHTML =
-                            '<div class="alert alert-danger bg-danger bg-opacity-20 border-0 text-white">' + data.message + '</div>';
+                            '<div class="alert alert-warning bg-warning bg-opacity-20 border-0 text-white"><span class="material-symbols-outlined align-middle me-2">warning</span>' + data.message + '</div>';
                     }
                 })
                 .catch(error => {
+                    // Mensaje limpio y amigable para el usuario en lugar del error del parser JSON
                     document.getElementById('llmModalContent').innerHTML =
-                        '<div class="alert alert-danger bg-danger bg-opacity-20 border-0 text-white">Error al cargar la información: ' + error.message + '</div>';
+                        '<div class="alert alert-info bg-info bg-opacity-20 border-0 text-white d-flex align-items-center gap-2">' +
+                        '<span class="material-symbols-outlined">info</span>' +
+                        '<span>' + error.message + '</span>' +
+                        '</div>';
                 })
                 .finally(() => {
                     document.getElementById('llmModalLoading').style.display = 'none';

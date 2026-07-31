@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace maxi_movie_mvc.Controllers
 {
@@ -16,7 +17,7 @@ namespace maxi_movie_mvc.Controllers
         private readonly MovieDbContext _context;
         private const int PageSize = 8;
         private readonly LlmService _llmService;
-        private readonly UserManager<Usuario> _userManager; // 👈 Inyectamos UserManager
+        private readonly UserManager<Usuario> _userManager;
 
         public HomeController(
             ILogger<HomeController> logger,
@@ -51,6 +52,7 @@ namespace maxi_movie_mvc.Controllers
             if (pagina > totalPaginas && totalPaginas > 0) pagina = totalPaginas;
 
             var peliculas = await consulta
+                .Include(p => p.ListaReviews.Where(r => !r.EstaOculta))
                 .OrderBy(p => p.Id)
                 .Skip((pagina - 1) * PageSize)
                 .Take(PageSize)
@@ -75,9 +77,13 @@ namespace maxi_movie_mvc.Controllers
             return View(peliculas);
         }
 
-        public async Task<IActionResult> Details(int Id)
+        public async Task<IActionResult> Details(int? id)
         {
-            // Validar si el usuario autenticado es Admin
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             bool esAdmin = false;
             if (User?.Identity?.IsAuthenticated == true)
             {
@@ -88,12 +94,12 @@ namespace maxi_movie_mvc.Controllers
                 }
             }
 
-            // Filtrar reseñas: si es admin trae todas, si no, omite las ocultas
             var pelicula = await _context.Peliculas
                 .Include(p => p.Genero)
+                .Include(p => p.Plataforma)
                 .Include(p => p.ListaReviews.Where(r => !r.EstaOculta || esAdmin))
                     .ThenInclude(r => r.Usuario)
-                .FirstOrDefaultAsync(p => p.Id == Id);
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (pelicula == null)
             {
@@ -105,7 +111,7 @@ namespace maxi_movie_mvc.Controllers
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 ViewBag.UserReview = await _context.Reviews
-                    .AnyAsync(r => r.PeliculaId == Id && r.UsuarioId == userId);
+                    .AnyAsync(r => r.PeliculaId == id && r.UsuarioId == userId);
             }
 
             return View(pelicula);
@@ -122,13 +128,30 @@ namespace maxi_movie_mvc.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        [Authorize] // 👈 Exige estar autenticado para usar este endpoint
         [HttpGet]
         public async Task<IActionResult> Spoiler(string titulo)
         {
             try
             {
-                var spoiler = await _llmService.ObtenerSpoilerAsync(titulo);
-                return Json(new { success = true, data = spoiler });
+                var pelicula = await _context.Peliculas.FirstOrDefaultAsync(p => p.Titulo == titulo);
+                if (pelicula == null)
+                    return Json(new { success = false, message = "Película no encontrada." });
+
+                // 1. Verificar si ya está almacenado en el Caché de la BD
+                if (!string.IsNullOrEmpty(pelicula.SpoilerIaCache))
+                {
+                    return Json(new { success = true, data = pelicula.SpoilerIaCache });
+                }
+
+                // 2. Si no existe, llamar a la API de IA
+                var spoilerGenerado = await _llmService.ObtenerSpoilerAsync(titulo);
+
+                // 3. Guardar en la BD para futuras consultas
+                pelicula.SpoilerIaCache = spoilerGenerado;
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, data = spoilerGenerado });
             }
             catch (Exception ex)
             {
@@ -136,13 +159,30 @@ namespace maxi_movie_mvc.Controllers
             }
         }
 
+        [Authorize] // 👈 Exige estar autenticado para usar este endpoint
         [HttpGet]
         public async Task<IActionResult> Resumen(string titulo)
         {
             try
             {
-                var resumen = await _llmService.ObtenerResumenAsync(titulo);
-                return Json(new { success = true, data = resumen });
+                var pelicula = await _context.Peliculas.FirstOrDefaultAsync(p => p.Titulo == titulo);
+                if (pelicula == null)
+                    return Json(new { success = false, message = "Película no encontrada." });
+
+                // 1. Verificar si ya está almacenado en el Caché de la BD
+                if (!string.IsNullOrEmpty(pelicula.ResumenIaCache))
+                {
+                    return Json(new { success = true, data = pelicula.ResumenIaCache });
+                }
+
+                // 2. Si no existe, llamar a la API de IA
+                var resumenGenerado = await _llmService.ObtenerResumenAsync(titulo);
+
+                // 3. Guardar en la BD para futuras consultas
+                pelicula.ResumenIaCache = resumenGenerado;
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, data = resumenGenerado });
             }
             catch (Exception ex)
             {

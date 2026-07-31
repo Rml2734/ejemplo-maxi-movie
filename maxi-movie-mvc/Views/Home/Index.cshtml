@@ -66,6 +66,9 @@
             <div class="row g-3">
                 @foreach (var pelicula in Model)
                 {
+                    var tieneReviews = pelicula.ListaReviews != null && pelicula.ListaReviews.Any();
+                    var promedio = tieneReviews ? pelicula.ListaReviews.Average(r => r.Rating).ToString("0.0") : "—";
+
                     <div class="col-12">
                         <a asp-action="Details" asp-route-id="@pelicula.Id" class="text-decoration-none card-hover d-block">
                             <div class="card border-0 shadow-sm text-white rounded-3 overflow-hidden" style="background-color: #212529;">
@@ -75,7 +78,7 @@
                                         <h5 class="card-title fs-5 fw-bold text-white mb-2">@pelicula.Titulo</h5>
                                         <div class="d-flex align-items-center small bg-dark bg-opacity-20 rounded-pill px-2 py-1 d-inline-flex">
                                             <span class="material-symbols-outlined text-warning me-1" style="font-size: 1.1rem;">star</span>
-                                            <span class="text-white-50 fw-semibold">4.5</span>
+                                            <span class="text-white-50 fw-semibold">@promedio</span>
                                         </div>
                                     </div>
                                 </div>
@@ -90,6 +93,9 @@
             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4">
                 @foreach (var pelicula in Model)
                 {
+                    var tieneReviews = pelicula.ListaReviews != null && pelicula.ListaReviews.Any();
+                    var promedio = tieneReviews ? pelicula.ListaReviews.Average(r => r.Rating).ToString("0.0") : "—";
+
                     <div class="col">
                         <a asp-action="Details" asp-route-id="@pelicula.Id" class="text-decoration-none card-hover d-block h-100">
                             <div class="card h-100 border-0 shadow-sm text-white rounded-3 overflow-hidden" style="background-color: #212529;">
@@ -100,7 +106,7 @@
                                     <h5 class="card-title fs-6 fw-bold text-white mb-2 text-truncate">@pelicula.Titulo</h5>
                                     <div class="d-flex align-items-center small">
                                         <span class="material-symbols-outlined text-warning me-1" style="font-size: 1.1rem;">star</span>
-                                        <span class="text-white-50 fw-semibold">4.5</span>
+                                        <span class="text-white-50 fw-semibold">@promedio</span>
                                     </div>
                                 </div>
                             </div>
