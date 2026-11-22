@@ -68,7 +68,10 @@ namespace maxi_movie_mvc.Controllers
                 if (resultado.Succeeded)
                 {
                     await _signInManager.SignInAsync(nuevoUsuario, isPersistent: false);
-                    await _emailService.SendAsync(nuevoUsuario.Email, "Bienvenido a Maxi Movie", "<h1>Gracias por registrarte en Maxi Movie!</h1><p>Esperamos que disfrutes de nuestra plataforma.</p>");
+                    //await _emailService.SendAsync(nuevoUsuario.Email, "Bienvenido a Maxi Movie", "<h1>Gracias por registrarte en Maxi Movie!</h1><p>Esperamos que disfrutes de nuestra plataforma.</p>");
+                    var urlSitio = Url.Action("Index", "Home", null, protocol: Request.Scheme) ?? "/";
+                    var cuerpoBienvenida = EmailTemplates.Bienvenida(nuevoUsuario.Nombre, urlSitio);
+                    await _emailService.SendAsync(nuevoUsuario.Email, "Bienvenido a MaxiMovie", cuerpoBienvenida);
                     return RedirectToAction("Index", "Home");
                 }
                 else
