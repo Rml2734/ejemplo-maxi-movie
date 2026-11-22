@@ -171,6 +171,7 @@ La aplicación aplica las migraciones pendientes y ejecuta el `DbSeeder` al inic
     ├── Controllers/
     ├── Data/          # DbContext y DbSeeder
     ├── Migrations/    # Migraciones de EF Core
+    ├── Models/
     ├── Service/       # Correo (MailKit), almacenamiento de imágenes y otros servicios
     ├── Views/
     └── wwwroot/
